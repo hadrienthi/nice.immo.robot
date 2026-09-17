@@ -72,7 +72,7 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 /* Scène : portrait + dialogue */
 /* la scène prend la hauteur restante de la fenêtre (élastique) : rien ne dépasse, la conversation défile dans la carte, le portrait ne bouge pas quand on parle ; sous 380 px de place, la page défile */
 .scene{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:0 40px;min-height:380px} /* hauteur posée par ajusteScene() */
-.plate{grid-column:1;grid-row:1/3;height:100%;aspect-ratio:1067/1600;min-height:0;max-width:34vw}
+.plate{grid-column:1;grid-row:1/3;height:100%;aspect-ratio:1067/1600;min-height:0}
 .plate img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
 .card{grid-column:2;border:1px solid var(--color-divider);border-radius:var(--radius-md);background:var(--color-surface);box-shadow:var(--shadow-sm);padding:28px 30px 20px;display:flex;flex-direction:column;min-height:0;overflow:hidden;position:relative}
 .card.glisse{outline:2px dashed var(--color-accent);outline-offset:-6px;background:var(--color-accent-100)}
@@ -132,6 +132,13 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
   #rapport .methode{font-size:12.5px;color:#222}
   #rapport .pied{font-size:11px;color:#666;margin-top:16px;border-top:1px solid #ccc;padding-top:8px}
 }
+/* Puces de réponse rapide (chantier du 17/9) : suggestions cliquables sous la
+   question de l'assistante ; jamais un formulaire, la saisie libre reste possible */
+.puces{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:100%;padding:0 0 4px}
+.puce{border:1px solid var(--color-accent);border-radius:999px;background:transparent;color:var(--color-accent-700);font:inherit;font-size:14px;line-height:1.2;padding:8px 16px;cursor:pointer}
+.puce:hover{background:var(--color-accent-100)}
+.puce:active{background:var(--color-accent-200)}
+
 /* Saisie */
 .vignettes{display:none;gap:8px;padding:8px 0 4px}
 .vignettes.on{display:flex}
@@ -152,7 +159,6 @@ form.saisie{margin-top:auto;padding-top:10px}
 .champ .vert.on{background:#128c7e}
 .champ .vert.ecoute{animation:pulse 1.2s infinite}
 .lib-photos{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700);white-space:nowrap;margin-right:-4px}
-.aide{font-size:14.5px;font-style:normal;color:var(--color-neutral-800);margin:10px 0 0 12px;line-height:1.5}
 
 /* Partenariat */
 .partner{display:grid;grid-template-columns:26% 1fr;gap:24px;align-items:center;border-bottom:1px solid var(--color-divider);padding:16px 0 12px;margin-top:16px}
@@ -177,7 +183,6 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
   .champ{min-height:56px}
   .envoyer{width:46px;height:46px}
   .champ .vert{width:34px;height:34px}
-  .aide{margin-top:8px;font-size:13.5px}
   .partner{padding:10px 0 8px;margin-top:10px}
   header.top .wrap{padding-top:12px;padding-bottom:12px}
 }
@@ -244,7 +249,7 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
       <div class="plate"><img src="robot-nice-1067.webp" width="1067" height="1600" alt="Assistant robot d’estimation immobilière devant la baie des Anges à Nice" fetchpriority="high"></div>
       <section class="intro" id="estimer">
       <h1>Vous achetez, vendez ou investissez à Nice ?<br>Estimez un bien avec notre <em>IA spécialisée.</em></h1>
-      <p>Vous obtenez une estimation fondée sur 22 118 ventes réelles à Nice depuis 2023.</p>
+      <p>Vous obtenez une estimation fondée sur 22 118 ventes à Nice depuis 2023.</p>
   </section>
       <div class="card">
         <div class="card-head">
@@ -266,7 +271,6 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
             <button class="envoyer" id="envoyer" type="submit" aria-label="Envoyer"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 18-8-7 18-3-7-8-3Z"></path><path d="m11 14 10-11"></path></svg></button>
             <input type="file" id="fichier" accept="image/*" multiple hidden>
           </div>
-          <p class="aide">Précisez : adresse, appartement ou maison, surface, nombre de pièces, terrain, étage, ascenseur, état, vue, terrasse, parking, DPE…</p>
         </form>
       </div>
     </section>
@@ -281,7 +285,7 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
 
 <footer class="bottom">
   <div class="wrap">
-    <span>Nice.immo est un service privé indépendant et n'est ni exploité, ni édité, ni affilié à la Ville de Nice.</span>
+    <span>Nice.immo est un service privé indépendant de la Ville de Nice.</span>
     <a href="mentions-legales/">Mentions légales</a>
     <a href="confidentialite/">Confidentialité et données personnelles</a>
     <a href="mailto:contact@nice.immo">Contact</a>
@@ -445,13 +449,32 @@ flux.scrollTop=Math.max(0,ancre.offsetTop-4);
 }
 /* au redimensionnement, recale() est appelé par ajusteScene() une fois la hauteur posée */
 function erreur(txt){bulle('sys',null,txt);}
+/* ---- puces de réponse rapide (chantier du 17/9) : le worker joint data.suggestions à sa réponse,
+   chaque puce cliquée part comme un message utilisateur normal dans le fil ; toute nouvelle saisie
+   (puce ou texte libre) efface la rangée ---- */
+var pucesRow=null;
+function effacePuces(){if(pucesRow&&pucesRow.parentNode)pucesRow.parentNode.removeChild(pucesRow);pucesRow=null;}
+function montrePuces(liste){
+effacePuces();
+var d=document.createElement('div');d.className='puces';d.setAttribute('role','group');d.setAttribute('aria-label','Réponses rapides');
+liste.forEach(function(txt){
+  var b=document.createElement('button');b.type='button';b.className='puce';b.textContent=txt;
+  b.addEventListener('click',function(){
+    if(occupe)return;
+    saisie.value=txt;
+    document.getElementById('f').dispatchEvent(new Event('submit'));
+  });
+  d.appendChild(b);
+});
+pucesRow=d;flux.insertBefore(d,cale);recale();
+}
 /* compte-rendu (demande du 11/9) : après une estimation, un bouton propose d'enregistrer la conversation en PDF via l'impression du navigateur ; rien n'est transmis */
 var cr=null,dernierBien=null,dernierTexte='';
 function proposeCR(){
 if(!cr){cr=document.createElement('div');cr.className='cr';
   var b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Étude d’estimation (PDF)';
   b.addEventListener('click',function(){construitRapport();window.print();});
-  cr.appendChild(b);var p=document.createElement('span');p.textContent="Enregistrez l’étude en PDF ou imprimez-la.";cr.appendChild(p);}
+  cr.appendChild(b);var p=document.createElement('span');p.textContent="Estimation communiquée à titre indicatif. Enregistrez l’étude en PDF ou imprimez-la.";cr.appendChild(p);}
 flux.insertBefore(cr,cale);recale();
 }
 /* ---- étude d'estimation imprimable : chiffres annoncés par l'assistante (à défaut ceux du moteur), bien, comparables, méthode ---- */
@@ -501,7 +524,7 @@ for(var tour=0;tour<6;tour++){
   var blocs=data.content||[];
   var outils=blocs.filter(function(b){return b.type==='tool_use';});
   blocs.filter(function(b){return b.type==='text'&&b.text.trim();}).forEach(function(b){var tx=b.text.trim();bulle('ana','Nice.immo',tx);if(/^Estimation\s?:/m.test(tx)){dernierTexte=tx;proposeCR();}});
-  if(data.stop_reason!=='tool_use'||!outils.length){msgs.push({role:'assistant',content:blocs});return;}
+  if(data.stop_reason!=='tool_use'||!outils.length){msgs.push({role:'assistant',content:blocs});if(data.suggestions&&data.suggestions.length)montrePuces(data.suggestions);return;}
   msgs.push({role:'assistant',content:blocs});
   var resultats=[];
   for(var i=0;i<outils.length;i++){
@@ -616,7 +639,7 @@ ev.preventDefault();
 if(occupe)return;
 var t=saisie.value.trim();
 if(!t&&!photos.length)return;
-occupe=true;envoyer.disabled=true;saisie.value='';if(dictee.ecoute){try{dictee.rec.stop();}catch(e){}}
+occupe=true;envoyer.disabled=true;saisie.value='';effacePuces();if(dictee.ecoute){try{dictee.rec.stop();}catch(e){}}
 if(photos.length){
   if(!t)t='Voici des photos du bien.';
   var contenu=photos.map(function(u){return{type:'image',source:{type:'base64',media_type:'image/jpeg',data:u.split(',')[1]}};});
@@ -651,7 +674,10 @@ if(window.innerWidth<981){sc.style.height='';sc.style.columnGap='';if(br)br.styl
 else{
 var top=sc.getBoundingClientRect().top+window.scrollY;
 var bas=document.querySelector('.partner').offsetHeight+document.querySelector('footer.bottom').offsetHeight+18;
-sc.style.height=Math.max(380,window.innerHeight-top-bas)+'px';
+var H=Math.max(380,window.innerHeight-top-bas);
+/* écrans presque carrés : la scène est bornée pour que la colonne du robot ne dépasse pas 34 % de la largeur */
+H=Math.min(H,Math.round(window.innerWidth*0.34*1600/1067));
+sc.style.height=H+'px';
 /* espace robot→carte = espace filet du header→robot */
 sc.style.columnGap=Math.max(8,Math.round(document.querySelector('.plate').getBoundingClientRect().top-document.querySelector('header.top').getBoundingClientRect().bottom))+'px';
 /* logo centré sur la colonne du robot */
