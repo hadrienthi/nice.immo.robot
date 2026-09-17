@@ -136,6 +136,12 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
    question de l'assistante ; jamais un formulaire, la saisie libre reste possible */
 .puces{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:100%;padding:0 0 4px}
 .puces+.puces{margin-top:-6px}
+.puce.on{background:var(--color-accent-200);border-color:var(--color-accent-700);font-weight:600}
+.puce.on::before{content:'✓\00a0'}
+.puces-envoi{align-items:center;gap:14px}
+.puces-envoi .btn{height:34px;padding:0 16px;font-size:12px}
+.puces-envoi .btn:disabled{opacity:.4;cursor:default;background:transparent}
+.puces-envoi span{font-size:13px;color:var(--color-neutral-700)}
 .puce{border:1px solid var(--color-accent);border-radius:999px;background:transparent;color:var(--color-accent-700);font:inherit;font-size:14px;line-height:1.2;padding:8px 16px;cursor:pointer}
 .puce:hover{background:var(--color-accent-100)}
 .puce:active{background:var(--color-accent-200)}
@@ -458,20 +464,48 @@ function effacePuces(){pucesRows.forEach(function(r){if(r.parentNode)r.parentNod
 function montrePuces(groupes){
 effacePuces();
 if(groupes.length&&typeof groupes[0]==='string')groupes=[groupes]; /* tolère l'ancien format à plat */
-groupes.forEach(function(liste){
-if(!liste||liste.length<2)return;
+var lignes=[];
+groupes.forEach(function(l){if(l&&l.length>=2&&lignes.length<3)lignes.push(l);});
+if(!lignes.length)return;
+/* une seule rangée : le clic répond tout de suite (une question, une réponse).
+   plusieurs rangées : on choisit UNE réponse par ligne puis on envoie le tout en
+   un seul message (décision Hadrien du 18/9) ; jamais un formulaire : l'envoi
+   reste un message normal du fil et l'écriture libre reste possible. */
+var multi=lignes.length>1;
+var selection=[],bEnvoi=null;
+function majEnvoi(){if(bEnvoi)bEnvoi.disabled=!selection.some(function(x){return x;});}
+lignes.forEach(function(liste,gi){
+selection.push(null);
 var d=document.createElement('div');d.className='puces';d.setAttribute('role','group');d.setAttribute('aria-label','Réponses rapides');
 liste.forEach(function(txt){
   var b=document.createElement('button');b.type='button';b.className='puce';b.textContent=txt;
   b.addEventListener('click',function(){
     if(occupe)return;
-    saisie.value=txt;
-    document.getElementById('f').dispatchEvent(new Event('submit'));
+    if(!multi){saisie.value=txt;document.getElementById('f').dispatchEvent(new Event('submit'));return;}
+    var deja=b.classList.contains('on');
+    Array.prototype.forEach.call(d.children,function(x){x.classList.remove('on');});
+    selection[gi]=deja?null:txt;
+    if(!deja)b.classList.add('on');
+    majEnvoi();
   });
   d.appendChild(b);
 });
 pucesRows.push(d);flux.insertBefore(d,cale);
 });
+if(multi){
+var e=document.createElement('div');e.className='puces puces-envoi';
+bEnvoi=document.createElement('button');bEnvoi.type='button';bEnvoi.className='btn';bEnvoi.textContent='Envoyer ces réponses';bEnvoi.disabled=true;
+bEnvoi.addEventListener('click',function(){
+  if(occupe)return;
+  var parts=selection.filter(function(x){return x;});
+  if(!parts.length)return;
+  saisie.value=parts.join(', ');
+  document.getElementById('f').dispatchEvent(new Event('submit'));
+});
+e.appendChild(bEnvoi);
+var lg=document.createElement('span');lg.textContent='Choisissez une réponse par ligne, ou écrivez librement.';e.appendChild(lg);
+pucesRows.push(e);flux.insertBefore(e,cale);
+}
 recale();
 }
 /* compte-rendu (demande du 11/9) : après une estimation, un bouton propose d'enregistrer la conversation en PDF via l'impression du navigateur ; rien n'est transmis */
