@@ -135,6 +135,7 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 /* Puces de réponse rapide (chantier du 17/9) : suggestions cliquables sous la
    question de l'assistante ; jamais un formulaire, la saisie libre reste possible */
 .puces{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:100%;padding:0 0 4px}
+.puces+.puces{margin-top:-6px}
 .puce{border:1px solid var(--color-accent);border-radius:999px;background:transparent;color:var(--color-accent-700);font:inherit;font-size:14px;line-height:1.2;padding:8px 16px;cursor:pointer}
 .puce:hover{background:var(--color-accent-100)}
 .puce:active{background:var(--color-accent-200)}
@@ -452,10 +453,13 @@ function erreur(txt){bulle('sys',null,txt);}
 /* ---- puces de réponse rapide (chantier du 17/9) : le worker joint data.suggestions à sa réponse,
    chaque puce cliquée part comme un message utilisateur normal dans le fil ; toute nouvelle saisie
    (puce ou texte libre) efface la rangée ---- */
-var pucesRow=null;
-function effacePuces(){if(pucesRow&&pucesRow.parentNode)pucesRow.parentNode.removeChild(pucesRow);pucesRow=null;}
-function montrePuces(liste){
+var pucesRows=[];
+function effacePuces(){pucesRows.forEach(function(r){if(r.parentNode)r.parentNode.removeChild(r);});pucesRows=[];}
+function montrePuces(groupes){
 effacePuces();
+if(groupes.length&&typeof groupes[0]==='string')groupes=[groupes]; /* tolère l'ancien format à plat */
+groupes.forEach(function(liste){
+if(!liste||liste.length<2)return;
 var d=document.createElement('div');d.className='puces';d.setAttribute('role','group');d.setAttribute('aria-label','Réponses rapides');
 liste.forEach(function(txt){
   var b=document.createElement('button');b.type='button';b.className='puce';b.textContent=txt;
@@ -466,7 +470,9 @@ liste.forEach(function(txt){
   });
   d.appendChild(b);
 });
-pucesRow=d;flux.insertBefore(d,cale);recale();
+pucesRows.push(d);flux.insertBefore(d,cale);
+});
+recale();
 }
 /* compte-rendu (demande du 11/9) : après une estimation, un bouton propose d'enregistrer la conversation en PDF via l'impression du navigateur ; rien n'est transmis */
 var cr=null,dernierBien=null,dernierTexte='';
