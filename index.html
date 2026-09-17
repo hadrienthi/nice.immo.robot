@@ -138,6 +138,10 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 .puces+.puces{margin-top:-6px}
 .puce.on{background:var(--color-accent-200);border-color:var(--color-accent-700);font-weight:600}
 .puce.on::before{content:'✓\00a0'}
+.puce.sec{border-style:dashed;border-color:var(--color-neutral-500);color:var(--color-neutral-700)}
+.puce.act{background:var(--color-accent-100)}
+.puce.act:hover{background:var(--color-accent-200)}
+.puces .legende{font-size:12.5px;color:var(--color-neutral-700);align-self:center}
 .puces-envoi{align-items:center;gap:14px}
 .puces-envoi .btn{height:34px;padding:0 16px;font-size:12px}
 .puces-envoi .btn:disabled{opacity:.4;cursor:default;background:transparent}
@@ -167,6 +171,8 @@ form.saisie{margin-top:auto;padding-top:10px}
 .champ .vert.ecoute{animation:pulse 1.2s infinite}
 .lib-photos{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-neutral-700);white-space:nowrap;margin-right:-4px}
 
+.indicatif{font-size:12.5px;color:var(--color-neutral-700);margin:8px 0 0 12px;line-height:1.4}
+
 /* Partenariat */
 .partner{display:grid;grid-template-columns:26% 1fr;gap:24px;align-items:center;border-bottom:1px solid var(--color-divider);padding:16px 0 12px;margin-top:16px}
 .partner .btn{justify-self:center}
@@ -190,6 +196,7 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
   .champ{min-height:56px}
   .envoyer{width:46px;height:46px}
   .champ .vert{width:34px;height:34px}
+  .indicatif{margin-top:6px;font-size:12px}
   .partner{padding:10px 0 8px;margin-top:10px}
   header.top .wrap{padding-top:12px;padding-bottom:12px}
 }
@@ -278,6 +285,7 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
             <button class="envoyer" id="envoyer" type="submit" aria-label="Envoyer"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 18-8-7 18-3-7-8-3Z"></path><path d="m11 14 10-11"></path></svg></button>
             <input type="file" id="fichier" accept="image/*" multiple hidden>
           </div>
+          <p class="indicatif">Estimations communiquées à titre indicatif.</p>
         </form>
       </div>
     </section>
@@ -461,16 +469,32 @@ function erreur(txt){bulle('sys',null,txt);}
    (puce ou texte libre) efface la rangée ---- */
 var pucesRows=[];
 function effacePuces(){pucesRows.forEach(function(r){if(r.parentNode)r.parentNode.removeChild(r);});pucesRows=[];}
-function montrePuces(groupes){
+/* filet anti-redite (18/9) : une catégorie déjà présente dans le dossier du bien
+   (dernier appel d'outil) n'est pas réaffichée, même si le modèle la propose.
+   C'est un filet en complément de la consigne du prompt, pas une garantie. */
+function categorieConnue(liste){
+if(!dernierBien||!dernierBien.entree)return false;
+var e=dernierBien.entree,a=liste.join('|');
+if(a.indexOf('ascenseur')>=0&&'ascenseur' in e)return true;
+if(liste.indexOf('Neuf')>=0&&e.etat)return true;
+if(a.indexOf('Rez-de-chaussée')>=0&&e.etage)return true;
+if(liste.indexOf('Vue mer')>=0&&'vue_mer' in e)return true;
+if(liste.indexOf('D')>=0&&liste.indexOf('E')>=0&&e.dpe)return true;
+if(a.indexOf('Mitoyenne')>=0&&e.mitoyennete)return true;
+if(a.indexOf('garage')>=0&&'garage' in e)return true;
+if(a.indexOf('parking')>=0&&'parkings' in e)return true;
+if(a.indexOf('extérieur')>=0&&'terrasse_m2' in e)return true;
+if(a.indexOf('100 à 500')>=0&&'jardin_m2' in e)return true;
+return false;
+}
+function montrePuces(groupes,actions){
 effacePuces();
 if(groupes.length&&typeof groupes[0]==='string')groupes=[groupes]; /* tolère l'ancien format à plat */
 var lignes=[];
-groupes.forEach(function(l){if(l&&l.length>=2&&lignes.length<3)lignes.push(l);});
-if(!lignes.length)return;
-/* une seule rangée : le clic répond tout de suite (une question, une réponse).
-   plusieurs rangées : on choisit UNE réponse par ligne puis on envoie le tout en
-   un seul message (décision Hadrien du 18/9) ; jamais un formulaire : l'envoi
-   reste un message normal du fil et l'écriture libre reste possible. */
+groupes.forEach(function(l){if(l&&l.length>=2&&!categorieConnue(l)&&lignes.length<3)lignes.push(l);});
+/* une seule rangée : le clic répond tout de suite. plusieurs : une réponse par
+   ligne (une ligne peut rester vide) puis bouton d'envoi — un seul message dans
+   le fil, jamais un formulaire, l'écriture libre reste possible. */
 var multi=lignes.length>1;
 var selection=[],bEnvoi=null;
 function majEnvoi(){if(bEnvoi)bEnvoi.disabled=!selection.some(function(x){return x;});}
@@ -478,7 +502,9 @@ lignes.forEach(function(liste,gi){
 selection.push(null);
 var d=document.createElement('div');d.className='puces';d.setAttribute('role','group');d.setAttribute('aria-label','Réponses rapides');
 liste.forEach(function(txt){
-  var b=document.createElement('button');b.type='button';b.className='puce';b.textContent=txt;
+  var b=document.createElement('button');b.type='button';
+  b.className=/^je ne (sais|connais) pas/i.test(txt)?'puce sec':'puce'; /* « Je ne sais pas » : option secondaire, bord pointillé */
+  b.textContent=txt;
   b.addEventListener('click',function(){
     if(occupe)return;
     if(!multi){saisie.value=txt;document.getElementById('f').dispatchEvent(new Event('submit'));return;}
@@ -490,6 +516,7 @@ liste.forEach(function(txt){
   });
   d.appendChild(b);
 });
+if(!multi){var lg1=document.createElement('span');lg1.className='legende';lg1.textContent='Cliquez sur votre réponse.';d.appendChild(lg1);}
 pucesRows.push(d);flux.insertBefore(d,cale);
 });
 if(multi){
@@ -503,8 +530,19 @@ bEnvoi.addEventListener('click',function(){
   document.getElementById('f').dispatchEvent(new Event('submit'));
 });
 e.appendChild(bEnvoi);
-var lg=document.createElement('span');lg.textContent='Choisissez une réponse par ligne, ou écrivez librement.';e.appendChild(lg);
+var lg=document.createElement('span');lg.textContent='Sélectionnez vos réponses — une ligne peut rester vide — puis envoyez, ou écrivez librement.';e.appendChild(lg);
 pucesRows.push(e);flux.insertBefore(e,cale);
+}
+/* actions post-estimation (18/9) : explorer le résultat, pas qualifier le bien —
+   toujours à clic direct, même à plusieurs */
+if(actions&&actions.length){
+var da=document.createElement('div');da.className='puces';da.setAttribute('role','group');da.setAttribute('aria-label','Actions');
+actions.forEach(function(txt){
+  var b=document.createElement('button');b.type='button';b.className='puce act';b.textContent=txt;
+  b.addEventListener('click',function(){if(occupe)return;saisie.value=txt;document.getElementById('f').dispatchEvent(new Event('submit'));});
+  da.appendChild(b);
+});
+pucesRows.push(da);flux.insertBefore(da,cale);
 }
 recale();
 }
@@ -514,7 +552,7 @@ function proposeCR(){
 if(!cr){cr=document.createElement('div');cr.className='cr';
   var b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Étude d’estimation (PDF)';
   b.addEventListener('click',function(){construitRapport();window.print();});
-  cr.appendChild(b);var p=document.createElement('span');p.textContent="Estimation communiquée à titre indicatif. Enregistrez l’étude en PDF ou imprimez-la.";cr.appendChild(p);}
+  cr.appendChild(b);var p=document.createElement('span');p.textContent="Enregistrez l’étude en PDF ou imprimez-la.";cr.appendChild(p);}
 flux.insertBefore(cr,cale);recale();
 }
 /* ---- étude d'estimation imprimable : chiffres annoncés par l'assistante (à défaut ceux du moteur), bien, comparables, méthode ---- */
@@ -564,7 +602,7 @@ for(var tour=0;tour<6;tour++){
   var blocs=data.content||[];
   var outils=blocs.filter(function(b){return b.type==='tool_use';});
   blocs.filter(function(b){return b.type==='text'&&b.text.trim();}).forEach(function(b){var tx=b.text.trim();bulle('ana','Nice.immo',tx);if(/^Estimation\s?:/m.test(tx)){dernierTexte=tx;proposeCR();}});
-  if(data.stop_reason!=='tool_use'||!outils.length){msgs.push({role:'assistant',content:blocs});if(data.suggestions&&data.suggestions.length)montrePuces(data.suggestions);return;}
+  if(data.stop_reason!=='tool_use'||!outils.length){msgs.push({role:'assistant',content:blocs});if((data.suggestions&&data.suggestions.length)||(data.actions&&data.actions.length))montrePuces(data.suggestions||[],data.actions||[]);return;}
   msgs.push({role:'assistant',content:blocs});
   var resultats=[];
   for(var i=0;i<outils.length;i++){
