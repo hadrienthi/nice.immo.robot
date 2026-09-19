@@ -359,12 +359,41 @@ var near=SECTIONS.map(function(s){return{s:s,d:haversine(lat,lon,s.lat,s.lon)};}
 var lists=await Promise.all(near.map(function(x){return fetchSection(x.s.id);}));
 return [].concat.apply([],lists);
 }
+/* la BAN (api-adresse) ne dit jamais « introuvable » quand elle peut proposer un
+   sosie : elle renvoie la voie la plus ressemblante avec un score plus bas
+   (« 11 rue machelon » -> « 11 Rue Trachel », constat du 19/9). On vérifie donc
+   que la voie renvoyée correspond bien à la voie demandée ; sinon, pas
+   d'estimation : l'erreur remonte à l'assistante, qui demande confirmation. */
+function normaliseVoie(t){
+return String(t||'').toLowerCase()
+ .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+ .replace(/[^a-z]+/g,' ')
+ .replace(/\b(rue|avenue|av|boulevard|bd|impasse|imp|place|pl|chemin|che|allee|all|passage|pas|route|rte|promenade|prom|quai|square|sq|montee|corniche|traverse|villa|residence|res|bis|ter|de|du|des|le|la|les|l|d|a|au|aux)\b/g,' ')
+ .replace(new RegExp('\\b'+VILLE.nom.toLowerCase()+'\\b','g'),' ')
+ .replace(/\s+/g,' ').trim();
+}
+function ressemblance(a,b){ /* distance de Levenshtein normalisée, 0..1 */
+if(a===b)return 1;if(!a.length||!b.length)return 0;
+var m=[],i,j;
+for(i=0;i<=a.length;i++)m[i]=[i];
+for(j=0;j<=b.length;j++)m[0][j]=j;
+for(i=1;i<=a.length;i++)for(j=1;j<=b.length;j++)
+m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+return 1-m[a.length][b.length]/Math.max(a.length,b.length);
+}
 async function geocodeVille(adresse){
 var res=await fetch(BAN+'?'+new URLSearchParams({q:adresse,citycode:VILLE.citycode,limit:1}));
 if(!res.ok)throw new Error('service adresse indisponible');
 var data=await res.json();
 var ft=(data.features||[]).filter(function(f){return f.properties.citycode===VILLE.citycode;})[0];
 if(!ft)throw new Error('adresse introuvable à '+VILLE.nom);
+var demandee=normaliseVoie(adresse),trouvee=normaliseVoie(ft.properties.street||ft.properties.name||ft.properties.label);
+if(demandee&&trouvee){
+var proche=trouvee.indexOf(demandee)>=0||demandee.indexOf(trouvee)>=0||ressemblance(demandee,trouvee)>=0.75;
+if(!proche&&(ft.properties.score||0)<0.8){
+throw new Error('adresse non trouvée telle quelle à '+VILLE.nom+' : « '+adresse+' » est inconnue, la plus proche est « '+ft.properties.label+' ». Ne pas estimer : demander à l\'utilisateur de confirmer ou corriger son adresse.');
+}
+}
 return{lat:ft.geometry.coordinates[1],lon:ft.geometry.coordinates[0],label:ft.properties.label};
 }
 var VOIE={AV:'avenue',BD:'boulevard',IMP:'impasse',RTE:'route',RUE:'rue',PL:'place',ALL:'allée',PAS:'passage',LOT:'lotissement',RES:'résidence',SQ:'square',CHE:'chemin'};
