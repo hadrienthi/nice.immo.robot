@@ -462,7 +462,14 @@ contexte:{methode:local?'ventes locales pondérées par distance et récence':'r
   nb_ventes_1000m:cands.length,nb_ventes_600m:n600,vente_la_plus_proche_m:near,incertitude:incert},
 comparables:comps};
 }
-var TOOL_IMPL={estimer_bien:toolEstimerBien};
+/* vérification d'adresse immédiate (19/9) : le modèle appelle cet outil dès que
+   l'utilisateur donne une adresse, avant surface et type ; le garde-fou sosie de
+   geocodeVille s'applique et l'erreur remonte tout de suite dans le fil */
+async function toolVerifierAdresse(a){
+var geo=await geocodeVille(a.adresse);
+return{valide:true,adresse_reconnue:geo.label};
+}
+var TOOL_IMPL={estimer_bien:toolEstimerBien,verifier_adresse:toolVerifierAdresse};
 
 /* ================= TYPOGRAPHIE ================= */
 function typo(t){
@@ -587,9 +594,9 @@ recale();
 var cr=null,dernierBien=null,dernierTexte='';
 function proposeCR(){
 if(!cr){cr=document.createElement('div');cr.className='cr';
-  var b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Étude d’estimation (PDF)';
+  var b=document.createElement('button');b.type='button';b.className='btn';b.textContent='Estimation (PDF)';
   b.addEventListener('click',function(){construitRapport();window.print();});
-  cr.appendChild(b);var p=document.createElement('span');p.textContent="Enregistrez l’étude en PDF ou imprimez-la.";cr.appendChild(p);}
+  cr.appendChild(b);}
 flux.insertBefore(cr,cale);recale();
 }
 /* ---- étude d'estimation imprimable : chiffres annoncés par l'assistante (à défaut ceux du moteur), bien, comparables, méthode ---- */
