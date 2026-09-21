@@ -454,6 +454,12 @@ var raw=s2*base*coef
   +(!estMaison?Math.min(a.terrasse_m2||0,40)*base*0.3+(a.parkings||0)*12000:0)
   +(estMaison&&a.garage?15000:0);
 var incert=(!local)?'forte':(n600>=100&&near!==null&&near<=60)?'faible':(n600>=20)?'moyenne':'forte';
+/* garde-fou gabarit (21/9, constat Hadrien sur une maison de 1000 m²) : sans
+   ventes de taille voisine autour de l'adresse (moins de 3 entre la moitié et
+   le double de la surface), le bien est hors gabarit -> incertitude forte et
+   avertissement dédié ; le chiffre, lui, n'est pas retouché (honnêteté) */
+var memeGabarit=cands.filter(function(s){return s.surface>=s2*0.5&&s.surface<=s2*2;}).length;
+if(memeGabarit<3)incert='forte';
 var marge={faible:0.20,moyenne:0.30,forte:0.35}[incert]; /* calibrage hérité de l'examen en aveugle biarrot, revalidé sur banc niçois (voir _banc-nice) */
 var val=Math.round(raw/1000)*1000;
 var kEUR=function(x){return Math.round(x/1000)*1000;};
@@ -468,7 +474,8 @@ moteur:{valeur:val,prix_m2:Math.round(raw/s2),base_m2_ponderee:Math.round(base),
 contexte:{methode:local?'ventes locales pondérées par distance et récence':'repli sur la moyenne communale (peu de ventes proches)',
   regle_meme_immeuble:ruleOn?('appliquée : '+ruleP.length+' ventes récentes à moins de 50 m ont recentré la base'):'non applicable',
   dpe:a.dpe?("étiquette "+a.dpe+" intégrée au calcul (barème valeur verte modéré)"):"non renseigné (hypothèse d'une étiquette médiane D-E)",
-  nb_ventes_1000m:cands.length,nb_ventes_600m:n600,vente_la_plus_proche_m:near,incertitude:incert},
+  nb_ventes_1000m:cands.length,nb_ventes_600m:n600,vente_la_plus_proche_m:near,incertitude:incert,
+  gabarit:memeGabarit<3?('hors gabarit courant : '+memeGabarit+' vente(s) de taille comparable à moins de 1 km'):undefined},
 comparables:comps};
 }
 /* la vérification d'adresse immédiate (19/9) est désormais faite par le
@@ -499,7 +506,7 @@ var form=document.getElementById('f'),saisie=document.getElementById('saisie'),e
 var jFill=document.getElementById('jauge-fill'),jLib=document.getElementById('jauge-lib'),recapEl=document.getElementById('recap');
 var fichier=document.getElementById('fichier'),vignettes=document.getElementById('vignettes');
 var dossier={},repondu={},photos=[],commentairePhotos='';
-var etapeCourante=null,modeSaisie=null,occupe=false,avertNR=0,estimationFaite=false,noteEnvoyee=false;
+var etapeCourante=null,modeSaisie=null,occupe=false,avertNR=0,noteGabarit='',estimationFaite=false,noteEnvoyee=false;
 var cr=null,dernierBien=null,dernierTexte='';
 function recale(){flux.scrollTop=0;}
 function videFlux(){attente.classList.remove('on');flux.innerHTML='';}
@@ -523,7 +530,7 @@ type:{question:function(){return 'S’agit-il d’un appartement ou d’une mais
  applique:function(r){var t=r==='Maison'?'maison':'appartement';if(dossier.type&&dossier.type!==t)changeDeType();dossier.type=t;},
  chip:function(){return dossier.type==='maison'?'Maison':'Appartement';},nom:'Type'},
 surface:{question:function(){return 'Quelle est la surface habitable, en m² ?';},mode:'nombre',min:8,max:2000,
- applique:function(n){dossier.surface_m2=n;},chip:function(){return dossier.surface_m2+' m²';},nom:'Surface'},
+ applique:function(n){dossier.surface_m2=n;var seuil=dossier.type==='maison'?600:300;noteGabarit=n>seuil?'Un bien de '+n+' m² sort du gabarit courant : l’estimation restera indicative.':'';},chip:function(){return dossier.surface_m2+' m²';},nom:'Surface'},
 pieces:{question:function(){return 'Combien de pièces principales compte le bien ? (séjour et chambres)';},mode:'puces',nr:true,
  options:function(){return ['1','2','3','4','5','6 ou plus'];},
  applique:function(r){dossier.pieces=r==='6 ou plus'?6:parseInt(r,10);},efface:function(){delete dossier.pieces;},
@@ -613,6 +620,7 @@ etapeCourante=id;
 videFlux();cacheSaisie();
 var e=ETAPES[id],texte=e.question();
 if(avertNR===1){bulle('sys',null,'Réponse passée. Plus il y a de réponses, plus l’estimation est précise.');avertNR=2;}
+if(noteGabarit){bulle('sys',null,noteGabarit);noteGabarit='';}
 var d=bulle('ana','Nice.immo','');
 var reduit=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
 clearTimeout(minuterieQ);
@@ -877,7 +885,7 @@ return a;
 }
 async function lanceEstimation(){
 if(occupe)return;occupe=true;
-cacheSaisie();
+cacheSaisie();noteGabarit='';
 if(estimationFaite){videFlux();estimationFaite=false;majJauge();}
 penser(true,'Recherche dans l’historique des ventes autour de votre bien…');
 var entree=dossierMoteur(),sortie=null,texte=null;
@@ -925,6 +933,7 @@ if(c.regle_meme_immeuble&&String(c.regle_meme_immeuble).indexOf('appliquée')===
 if(e.etat)l.push('· État retenu : '+({neuf:'neuf',bon:'bon état',a_rafraichir:'à rafraîchir',a_renover:'à rénover'}[e.etat]||e.etat)+'.');
 l.push('· '+(e.dpe?'Étiquette DPE '+e.dpe+' intégrée au calcul.':'DPE non renseigné : l’estimation suppose une étiquette médiane (D ou E).'));
 if(e.vue_mer)l.push('· La vue mer a été valorisée.');
+if(c.gabarit)l.push('· Bien hors du gabarit courant : peu de ventes de taille comparable autour de l’adresse, estimation à prendre avec prudence.');
 if(c.incertitude==='forte')l.push('· Peu de ventes proches : cette estimation est indicative.');
 l.push('','Vous pouvez enregistrer cette étude d’estimation en PDF ou l’imprimer.','Pour affiner cette estimation, nous pouvons vous conseiller des agents immobiliers.');
 return l.join('\n');
