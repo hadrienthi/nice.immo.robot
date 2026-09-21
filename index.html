@@ -286,7 +286,7 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
           </div>
         </div>
         <div class="jauge" id="jauge">
-          <div class="jauge-ligne"><span class="jauge-lib" id="jauge-lib">Étape 1 sur 12</span><span class="jauge-note">Aucune coordonnée demandée. Votre estimation en PDF à la fin.</span></div>
+          <div class="jauge-ligne"><span class="jauge-lib" id="jauge-lib">Votre projet</span><span class="jauge-note">Aucune coordonnée demandée. Votre estimation en PDF à la fin.</span></div>
           <div class="jauge-barre" aria-hidden="true"><i id="jauge-fill"></i></div>
           <p class="jauge-avert" id="jauge-avert" hidden>Plus il y a de réponses, plus l’estimation est précise.</p>
         </div>
@@ -525,7 +525,11 @@ var LBL_ETAT={'Neuf':'neuf','Bon état':'bon','À rafraîchir':'a_rafraichir','�
 var LBL_ETAGE={'Rez-de-chaussée':'rdc','Étage intermédiaire':'intermediaire','Dernier étage':'dernier'};
 var LBL_MIT={'Indépendante':'independante','Mitoyenne d’un côté':'un_cote','Mitoyenne des deux côtés':'deux_cotes'};
 var ETAPES={
-adresse:{question:function(){return 'Commençons par l’adresse : où se situe le bien à estimer à Nice ?';},mode:'adresse',
+projet:{question:function(){return 'Quel est votre projet à Nice ?';},mode:'puces',
+ options:function(){return ['Je vends','J’achète','Je me renseigne'];},
+ applique:function(r){dossier.projet=r==='Je vends'?'vente':r==='J’achète'?'achat':'curiosite';},
+ chip:function(){return {vente:'Vendeur',achat:'Acheteur',curiosite:'Par curiosité'}[dossier.projet]||null;},nom:'Projet'},
+adresse:{question:function(){return 'Où se situe le bien à estimer à Nice ?';},mode:'adresse',
  chip:function(){return dossier.adresse_courte;},nom:'Adresse'},
 type:{question:function(){return 'S’agit-il d’un appartement ou d’une maison ?';},mode:'puces',
  options:function(){return ['Appartement','Maison'];},
@@ -585,7 +589,7 @@ vue:{question:function(){return 'Le bien a-t-il une vue mer ?';},mode:'puces',
 photos:{question:function(){return 'Souhaitez-vous ajouter des photos du bien ? Jusqu’à 3, c’est facultatif ; elles ne sont jamais conservées.';},mode:'photos',chip:function(){return null;}}
 };
 function ordre(){
-var o=['adresse','type','surface','pieces'];
+var o=['projet','adresse','type','surface','pieces'];
 o=o.concat(dossier.type==='maison'?['terrain','mitoyennete','garage','etat','dpe','vue']:['etage','ascenseur','etat','dpe','exterieur','ext_surface','parking','vue']);
 o.push('photos');
 return o.filter(function(id){var e=ETAPES[id];return !(e.passe&&e.passe());});
@@ -595,12 +599,20 @@ function changeDeType(){
 ['etage','ascenseur','exterieur','terrasse_m2','parkings','jardin_m2','mitoyennete','garage'].forEach(function(ch){delete dossier[ch];});
 }
 /* ---- jauge de progression et récapitulatif cliquable ---- */
+function phaseDe(id){
+if(id==='projet')return 'Votre projet';
+if(id==='adresse'||id==='type'||id==='surface'||id==='pieces')return 'Votre bien';
+if(id==='photos')return 'Les photos';
+return 'Les précisions';
+}
 function majJauge(){
 if(estimationFaite){jFill.style.width='100%';jLib.textContent='Votre estimation';return;}
-var o=ordre(),total=o.length,faits=0;
-o.forEach(function(id){if(repondu[id])faits++;});
+var o=ordre(),total=o.length,faits=0,courante=null;
+o.forEach(function(id){if(repondu[id])faits++;else if(!courante)courante=id;});
 jFill.style.width=Math.round(faits/(total+1)*100)+'%'; /* +1 : l'estimation elle-même */
-jLib.textContent='Étape '+Math.min(faits+1,total)+' sur '+total;
+/* libellé de phase, jamais de compteur « étape x sur y » (décision Hadrien
+   21/9 : le décompte démotive avant même de commencer) */
+jLib.textContent=phaseDe(courante||'photos');
 }
 function majRecap(){
 recapEl.innerHTML='';
@@ -868,6 +880,7 @@ suite(); /* le commentaire reste affiché pendant la recherche des ventes */
 /* ---- fin de parcours : moteur local, puis rédaction par l'IA ---- */
 function dossierMoteur(){
 var a={adresse:dossier.adresse,type:dossier.type,surface_m2:dossier.surface_m2};
+if(dossier.projet)a.projet=dossier.projet; /* ignoré par le moteur, sert à la phrase de conclusion */
 if(dossier.pieces)a.pieces=dossier.pieces;
 if(dossier.type==='appartement'){
 if(dossier.etage)a.etage=dossier.etage;
@@ -961,7 +974,10 @@ if(!e.dpe)manque.push('le DPE');
 if(e.type==='appartement'&&!e.etage)manque.push('l’étage');
 if(e.type==='maison'&&typeof e.jardin_m2!=='number')manque.push('la surface du terrain');
 if(manque.length)l.push('· Ce qui affinerait encore : '+manque.join(', ')+'.');
-l.push('','Vous pouvez enregistrer cette étude d’estimation en PDF ou l’imprimer.','Pour affiner cette estimation, nous pouvons vous conseiller des agents immobiliers.');
+l.push('');
+if(e.projet==='vente')l.push('Cette estimation vous donne une base pour fixer votre prix de vente.');
+if(e.projet==='achat')l.push('Cette estimation vous donne une base pour apprécier le prix demandé.');
+l.push('Vous pouvez enregistrer cette étude d’estimation en PDF ou l’imprimer.','Pour affiner cette estimation, nous pouvons vous conseiller des agents immobiliers.');
 return l.join('\n');
 }
 /* ---- note d'expérience (décision Hadrien 21/9) : 1 à 5 en smileys, anonyme ---- */
