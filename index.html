@@ -154,6 +154,7 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 .jauge-note{font-size:12.5px;color:var(--color-neutral-700);text-align:right}
 .jauge-barre{height:6px;border-radius:999px;background:var(--color-neutral-300);overflow:hidden}
 .jauge-barre i{display:block;height:100%;width:0;background:var(--color-accent);border-radius:999px;transition:width .4s ease}
+.jauge-avert{font-size:12.5px;color:var(--color-accent-700);margin:6px 0 0}
 @media (prefers-reduced-motion:reduce){.jauge-barre i{transition:none}}
 .recap{display:none;flex-wrap:wrap;gap:6px;padding:0 0 10px}
 .recap.on{display:flex}
@@ -287,6 +288,7 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
         <div class="jauge" id="jauge">
           <div class="jauge-ligne"><span class="jauge-lib" id="jauge-lib">Étape 1 sur 12</span><span class="jauge-note">Aucune coordonnée demandée. Votre estimation en PDF à la fin.</span></div>
           <div class="jauge-barre" aria-hidden="true"><i id="jauge-fill"></i></div>
+          <p class="jauge-avert" id="jauge-avert" hidden>Plus il y a de réponses, plus l’estimation est précise.</p>
         </div>
         <div class="recap" id="recap" aria-label="Vos réponses, cliquez pour modifier"></div>
         <div class="flux" id="flux" aria-live="polite"><div class="msg ana attente" id="attente"><div class="qui">Nice.immo</div><span class="pts" aria-hidden="true"><i></i><i></i><i></i></span><span class="txt">Recherche dans l’historique des ventes autour de votre bien…</span></div></div>
@@ -485,7 +487,7 @@ comparables:comps};
 /* ================= TYPOGRAPHIE ================= */
 function typo(t){
 return t
- .replace(/(\d) (\d{3})(?!\d)/g,'$1\u202f$2')
+ .replace(/(\d) (?=\d{3}(?!\d))/g,'$1\u202f') /* regard avant : « 1 098 000 » reçoit ses deux fines */
  .replace(/(\d|²) (€|%|m²)/g,'$1\u202f$2')
  .replace(/ ([:;?!])/g,'\u202f$1');
 }
@@ -503,10 +505,10 @@ return t
    d'expérience (1 à 5) part vers POST /avis, anonyme. */
 var flux=document.getElementById('flux'),attente=document.getElementById('attente');
 var form=document.getElementById('f'),saisie=document.getElementById('saisie'),envoyer=document.getElementById('envoyer'),unite=document.getElementById('unite');
-var jFill=document.getElementById('jauge-fill'),jLib=document.getElementById('jauge-lib'),recapEl=document.getElementById('recap');
+var jFill=document.getElementById('jauge-fill'),jLib=document.getElementById('jauge-lib'),jAvert=document.getElementById('jauge-avert'),recapEl=document.getElementById('recap');
 var fichier=document.getElementById('fichier'),vignettes=document.getElementById('vignettes');
 var dossier={},repondu={},photos=[],commentairePhotos='';
-var etapeCourante=null,modeSaisie=null,occupe=false,avertNR=0,noteGabarit='',estimationFaite=false,noteEnvoyee=false;
+var etapeCourante=null,modeSaisie=null,occupe=false,noteGabarit='',estimationFaite=false,noteEnvoyee=false;
 var cr=null,dernierBien=null,dernierTexte='';
 function recale(){flux.scrollTop=0;}
 function videFlux(){attente.classList.remove('on');flux.innerHTML='';}
@@ -619,7 +621,6 @@ function montreEtape(id){
 etapeCourante=id;
 videFlux();cacheSaisie();
 var e=ETAPES[id],texte=e.question();
-if(avertNR===1){bulle('sys',null,'Réponse passée. Plus il y a de réponses, plus l’estimation est précise.');avertNR=2;}
 if(noteGabarit){bulle('sys',null,noteGabarit);noteGabarit='';}
 var d=bulle('ana','Nice.immo','');
 var reduit=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -655,7 +656,7 @@ recale();
 }
 function pilNonRenseigne(id){
 var b=document.createElement('button');b.type='button';b.className='puce sec';b.textContent='Non renseigné';
-b.addEventListener('click',function(){if(occupe)return;if(!avertNR)avertNR=1;repond(id,null,true);});
+b.addEventListener('click',function(){if(occupe)return;jAvert.hidden=false;repond(id,null,true);}); /* l'avertissement s'installe sous la jauge, pour tout le parcours */
 return b;
 }
 function repond(id,valeur,nonRenseigne){
@@ -924,17 +925,42 @@ var MOISL=['janvier','février','mars','avril','mai','juin','juillet','août','s
 var l=['Estimation : '+fmt(m.valeur)+' €',
 'Fourchette probable : '+fmt(m.fourchette_probable.basse)+' à '+fmt(m.fourchette_probable.haute)+' €',
 '≈ '+fmt(m.prix_m2)+' €/m²','','Pourquoi cette estimation ?'];
+/* 1. la base */
+if(c.methode&&c.methode.indexOf('ventes locales')===0)l.push('· Base : '+fmt(m.base_m2_ponderee)+' €/m², calculée sur '+c.nb_ventes_1000m+' ventes réelles à moins de 1 km'+(c.vente_la_plus_proche_m!=null?' (la plus proche à '+c.vente_la_plus_proche_m+' m)':'')+', pondérées par la distance et la récence.');
+else l.push('· Base : '+fmt(m.base_m2_ponderee)+' €/m², moyenne communale, faute de ventes suffisantes à proximité.');
+if(c.regle_meme_immeuble&&String(c.regle_meme_immeuble).indexOf('appliquée')===0)l.push('· Des ventes récentes à moins de 50 m (même immeuble ou voisinage immédiat) ont recentré cette base.');
+/* 2. les ajustements réellement comptés : le sens, jamais de pourcentage */
+var aj=[];
+var ETL={neuf:'état neuf, à la hausse',bon:'bon état, neutre',a_rafraichir:'état à rafraîchir, à la baisse',a_renover:'état à rénover, à la baisse'};
+if(e.etat)aj.push(ETL[e.etat]||e.etat);
+if(e.dpe)aj.push('DPE '+e.dpe+('ABC'.indexOf(e.dpe)>=0?', à la hausse':'EFG'.indexOf(e.dpe)>=0?', à la baisse':', neutre'));
+else aj.push('DPE non renseigné (hypothèse d’une étiquette médiane D-E)');
+if(e.etage==='dernier')aj.push('dernier étage, à la hausse');
+if(e.etage==='rdc')aj.push('rez-de-chaussée, à la baisse');
+if(e.ascenseur&&e.etage!=='rdc')aj.push('ascenseur, à la hausse');
+if(e.vue_mer)aj.push('vue mer, à la hausse');
+if(typeof e.terrasse_m2==='number'&&e.terrasse_m2>0)aj.push('extérieur de '+e.terrasse_m2+' m², à la hausse');
+if(e.parkings)aj.push(e.parkings+' place'+(e.parkings>1?'s':'')+' de parking, à la hausse');
+if(e.surface_m2<50)aj.push('petite surface, prix au m² à la hausse');else if(e.surface_m2>100)aj.push('grande surface, prix au m² à la baisse');
+if(typeof e.jardin_m2==='number')aj.push('terrain de '+e.jardin_m2+' m²'+(e.jardin_m2<100?', à la baisse':e.jardin_m2>500?', à la hausse':', neutre'));
+if(e.mitoyennete==='un_cote')aj.push('mitoyenne d’un côté, à la baisse');
+if(e.mitoyennete==='deux_cotes')aj.push('mitoyenne des deux côtés, à la baisse');
+if(e.garage)aj.push('garage, à la hausse');
+l.push('· Ajustements : '+(aj.length?aj.join(' ; ')+'.':'aucun, bien supposé en état correct.'));
+/* 3. les ventes de référence, complètes */
 (o.comparables||[]).slice(0,3).forEach(function(k){
 var d=String(k.date||''),dt=d.length>=7?MOISL[+d.slice(5,7)-1]+' '+d.slice(0,4):d;
-l.push('· '+k.adresse+', '+dt+', '+k.surface_m2+' m², '+fmt(k.prix_m2)+' €/m²');
+l.push('· '+k.adresse+', '+dt+', '+k.surface_m2+' m², '+fmt(k.prix_m2)+' €/m²'+(k.distance_m!=null?', à '+k.distance_m+' m':'')+'.');
 });
-l.push('· '+(c.methode&&c.methode.indexOf('ventes locales')===0?'Base : les ventes réelles autour de l’adresse, pondérées par la distance et la récence.':'Base : la moyenne communale, faute de ventes suffisantes à proximité.'));
-if(c.regle_meme_immeuble&&String(c.regle_meme_immeuble).indexOf('appliquée')===0)l.push('· Des ventes récentes à moins de 50 m (même immeuble ou voisinage immédiat) ont recentré la base.');
-if(e.etat)l.push('· État retenu : '+({neuf:'neuf',bon:'bon état',a_rafraichir:'à rafraîchir',a_renover:'à rénover'}[e.etat]||e.etat)+'.');
-l.push('· '+(e.dpe?'Étiquette DPE '+e.dpe+' intégrée au calcul.':'DPE non renseigné : l’estimation suppose une étiquette médiane (D ou E).'));
-if(e.vue_mer)l.push('· La vue mer a été valorisée.');
+/* 4. la confiance, et ce qui manque */
 if(c.gabarit)l.push('· Bien hors du gabarit courant : peu de ventes de taille comparable autour de l’adresse, estimation à prendre avec prudence.');
-if(c.incertitude==='forte')l.push('· Peu de ventes proches : cette estimation est indicative.');
+l.push('· Confiance : incertitude '+(c.incertitude||'moyenne')+', fourchette de ± 10 %'+(c.incertitude==='forte'?' ; estimation indicative, les ventes proches sont peu nombreuses':'')+'.');
+var manque=[];
+if(!e.etat)manque.push('l’état');
+if(!e.dpe)manque.push('le DPE');
+if(e.type==='appartement'&&!e.etage)manque.push('l’étage');
+if(e.type==='maison'&&typeof e.jardin_m2!=='number')manque.push('la surface du terrain');
+if(manque.length)l.push('· Ce qui affinerait encore : '+manque.join(', ')+'.');
 l.push('','Vous pouvez enregistrer cette étude d’estimation en PDF ou l’imprimer.','Pour affiner cette estimation, nous pouvons vous conseiller des agents immobiliers.');
 return l.join('\n');
 }
