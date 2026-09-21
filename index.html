@@ -150,10 +150,9 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 /* Parcours hybride (chantier du 21/9) : jauge, récapitulatif, note d'expérience */
 .jauge{margin:0 0 10px}
 .jauge-ligne{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
-.jauge-lib{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--color-accent-700);white-space:nowrap}
-.jauge-note{font-size:12.5px;color:var(--color-neutral-700);text-align:right}
+.jauge-lib{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--color-accent-700)}
 .jauge-barre{height:6px;border-radius:999px;background:var(--color-neutral-300);overflow:hidden}
-.jauge-barre i{display:block;height:100%;width:0;background:var(--color-accent);border-radius:999px;transition:width .4s ease}
+.jauge-barre i{display:block;height:100%;width:0;background:#1da851;border-radius:999px;transition:width .4s ease} /* vert des boutons : la progression se voit (demande Hadrien 21/9) */
 .jauge-avert{font-size:12.5px;color:var(--color-accent-700);margin:6px 0 0}
 @media (prefers-reduced-motion:reduce){.jauge-barre i{transition:none}}
 .recap{display:none;flex-wrap:wrap;gap:6px;padding:0 0 10px}
@@ -286,7 +285,7 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
           </div>
         </div>
         <div class="jauge" id="jauge">
-          <div class="jauge-ligne"><span class="jauge-lib" id="jauge-lib">Votre projet</span><span class="jauge-note">Aucune coordonnée demandée. Votre estimation en PDF à la fin.</span></div>
+          <div class="jauge-ligne"><span class="jauge-lib" id="jauge-lib">Votre estimation en PDF dès la fin de l’échange avec l’IA.</span></div>
           <div class="jauge-barre" aria-hidden="true"><i id="jauge-fill"></i></div>
           <p class="jauge-avert" id="jauge-avert" hidden>Plus il y a de réponses, plus l’estimation est précise.</p>
         </div>
@@ -450,6 +449,12 @@ if(!estMaison){
   if(typeof a.jardin_m2==='number'){if(a.jardin_m2<100)coef-=0.06;else if(a.jardin_m2>1000)coef+=0.12;else if(a.jardin_m2>500)coef+=0.06;}
 }
 if(a.vue_mer)coef+=0.12;
+/* exposition (21/9, décision fonctionnelle du 1/9) : barème PRUDENT dans
+   l'esprit du DPE modéré, sud +3 %, nord -3 %, est et ouest neutres ;
+   ordre de grandeur des études notariales et portails, À FAIRE VALIDER
+   par le père avant production */
+var EXPO={sud:0.03,nord:-0.03,est:0,ouest:0};
+if(a.exposition&&EXPO.hasOwnProperty(a.exposition))coef+=EXPO[a.exposition];
 var s2=a.surface_m2;
 if(s2<30)coef+=0.08;else if(s2<50)coef+=0.04;else if(s2>100)coef-=0.04;
 var raw=s2*base*coef
@@ -522,14 +527,13 @@ flux.appendChild(d);return d;
 /* ---- catalogue des étapes : celui des puces du 18/9, sans l'occupation ni la
    date de construction (aucun champ moteur : règle d'honnêteté) ---- */
 var LBL_ETAT={'Neuf':'neuf','Bon état':'bon','À rafraîchir':'a_rafraichir','À rénover':'a_renover'};
-var LBL_ETAGE={'Rez-de-chaussée':'rdc','Étage intermédiaire':'intermediaire','Dernier étage':'dernier'};
 var LBL_MIT={'Indépendante':'independante','Mitoyenne d’un côté':'un_cote','Mitoyenne des deux côtés':'deux_cotes'};
 var ETAPES={
 projet:{question:function(){return 'Quel est votre projet à Nice ?';},mode:'puces',
- options:function(){return ['Je vends','J’achète','Je me renseigne'];},
- applique:function(r){dossier.projet=r==='Je vends'?'vente':r==='J’achète'?'achat':'curiosite';},
+ options:function(){return ['Vendre','Acheter','Me renseigner'];},
+ applique:function(r){dossier.projet=r==='Vendre'?'vente':r==='Acheter'?'achat':'curiosite';},
  chip:function(){return {vente:'Vendeur',achat:'Acheteur',curiosite:'Par curiosité'}[dossier.projet]||null;},nom:'Projet'},
-adresse:{question:function(){return 'Où se situe le bien à estimer à Nice ?';},mode:'adresse',
+adresse:{question:function(){return 'À quelle adresse se situe le bien à estimer ?';},mode:'adresse',
  chip:function(){return dossier.adresse_courte;},nom:'Adresse'},
 type:{question:function(){return 'S’agit-il d’un appartement ou d’une maison ?';},mode:'puces',
  options:function(){return ['Appartement','Maison'];},
@@ -541,10 +545,9 @@ pieces:{question:function(){return 'Combien de pièces principales compte le bie
  options:function(){return ['1','2','3','4','5','6 ou plus'];},
  applique:function(r){dossier.pieces=r==='6 ou plus'?6:parseInt(r,10);},efface:function(){delete dossier.pieces;},
  chip:function(){return dossier.pieces?(dossier.pieces===6?'6 pièces ou plus':dossier.pieces+' pièce'+(dossier.pieces>1?'s':'')):null;},nom:'Pièces'},
-etage:{seulement:'appartement',question:function(){return 'À quel étage se trouve l’appartement ?';},mode:'puces',nr:true,
- options:function(){return ['Rez-de-chaussée','Étage intermédiaire','Dernier étage'];},
- applique:function(r){dossier.etage=LBL_ETAGE[r];},efface:function(){delete dossier.etage;},
- chip:function(){return {rdc:'Rez-de-chaussée',intermediaire:'Étage intermédiaire',dernier:'Dernier étage'}[dossier.etage]||null;},nom:'Étage'},
+etage:{seulement:'appartement',question:function(){return 'À quel étage se trouve l’appartement, et combien d’étages compte l’immeuble ? (par exemple : 5 sur 7)';},mode:'etage',nr:true,
+ efface:function(){delete dossier.etage;delete dossier.etage_detail;},
+ chip:function(){return dossier.etage_detail||({rdc:'Rez-de-chaussée',intermediaire:'Étage intermédiaire',dernier:'Dernier étage'}[dossier.etage]||null);},nom:'Étage'},
 ascenseur:{seulement:'appartement',passe:function(){return dossier.etage==='rdc';},
  question:function(){return 'L’immeuble a-t-il un ascenseur ?';},mode:'puces',nr:true,
  options:function(){return ['Avec ascenseur','Sans ascenseur'];},
@@ -569,6 +572,10 @@ dpe:{question:function(){return 'Quelle est l’étiquette énergie du bien (DPE
  options:function(){return ['A','B','C','D','E','F','G'];},
  applique:function(r){dossier.dpe=r;},efface:function(){delete dossier.dpe;},
  chip:function(){return dossier.dpe?'DPE '+dossier.dpe:null;},nom:'DPE'},
+exposition:{question:function(){return 'Quelle est l’exposition principale du bien ?';},mode:'puces',nr:true,
+ options:function(){return ['Sud','Ouest','Est','Nord'];},
+ applique:function(r){dossier.exposition=r.toLowerCase();},efface:function(){delete dossier.exposition;},
+ chip:function(){return dossier.exposition?'Exposition '+dossier.exposition:null;},nom:'Exposition'},
 exterieur:{seulement:'appartement',question:function(){return 'L’appartement dispose-t-il d’un extérieur ?';},mode:'puces',nr:true,
  options:function(){return ['Pas d’extérieur','Balcon','Terrasse'];},
  applique:function(r){if(dossier.exterieur!==r){delete dossier.terrasse_m2;delete repondu.ext_surface;}dossier.exterieur=r;if(r==='Pas d’extérieur')repondu.ext_surface=true;},
@@ -588,9 +595,24 @@ vue:{question:function(){return 'Le bien a-t-il une vue mer ?';},mode:'puces',
  chip:function(){return dossier.vue_mer===true?'Vue mer':dossier.vue_mer===false?'Sans vue mer':null;},nom:'Vue'},
 photos:{question:function(){return 'Souhaitez-vous ajouter des photos du bien ? Jusqu’à 3, c’est facultatif ; elles ne sont jamais conservées.';},mode:'photos',chip:function(){return null;}}
 };
+function parseEtage(t){
+var s=String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+if(/rez|rdc/.test(s))return{etage:'rdc',detail:'Rez-de-chaussée'};
+if(/dernier/.test(s))return{etage:'dernier',detail:'Dernier étage'};
+var m=s.match(/(\d{1,2})\s*(?:e|er|eme)?\s*(?:etage)?\s*(?:sur|\/)\s*(\d{1,2})/);
+if(m){
+var n=+m[1],tot=+m[2];
+if(tot<1||n>tot||tot>60)return null;
+if(n===0)return{etage:'rdc',detail:'Rez-de-chaussée'};
+if(n===tot)return{etage:'dernier',detail:'Dernier étage ('+n+'e)'};
+return{etage:'intermediaire',detail:n+'e étage sur '+tot};
+}
+if(/^0$/.test(s.trim()))return{etage:'rdc',detail:'Rez-de-chaussée'};
+return null;
+}
 function ordre(){
 var o=['projet','adresse','type','surface','pieces'];
-o=o.concat(dossier.type==='maison'?['terrain','mitoyennete','garage','etat','dpe','vue']:['etage','ascenseur','etat','dpe','exterieur','ext_surface','parking','vue']);
+o=o.concat(dossier.type==='maison'?['terrain','mitoyennete','garage','etat','dpe','exposition','vue']:['etage','ascenseur','etat','dpe','exterieur','ext_surface','parking','exposition','vue']);
 o.push('photos');
 return o.filter(function(id){var e=ETAPES[id];return !(e.passe&&e.passe());});
 }
@@ -599,20 +621,13 @@ function changeDeType(){
 ['etage','ascenseur','exterieur','terrasse_m2','parkings','jardin_m2','mitoyennete','garage'].forEach(function(ch){delete dossier[ch];});
 }
 /* ---- jauge de progression et récapitulatif cliquable ---- */
-function phaseDe(id){
-if(id==='projet')return 'Votre projet';
-if(id==='adresse'||id==='type'||id==='surface'||id==='pieces')return 'Votre bien';
-if(id==='photos')return 'Les photos';
-return 'Les précisions';
-}
 function majJauge(){
 if(estimationFaite){jFill.style.width='100%';jLib.textContent='Votre estimation';return;}
-var o=ordre(),total=o.length,faits=0,courante=null;
-o.forEach(function(id){if(repondu[id])faits++;else if(!courante)courante=id;});
+var o=ordre(),total=o.length,faits=0;
+o.forEach(function(id){if(repondu[id])faits++;});
 jFill.style.width=Math.round(faits/(total+1)*100)+'%'; /* +1 : l'estimation elle-même */
-/* libellé de phase, jamais de compteur « étape x sur y » (décision Hadrien
-   21/9 : le décompte démotive avant même de commencer) */
-jLib.textContent=phaseDe(courante||'photos');
+/* ni compteur ni libellé d'étape (décisions Hadrien 21/9) : le bandeau
+   porte la promesse PDF, seule la barre avance */
 }
 function majRecap(){
 recapEl.innerHTML='';
@@ -659,8 +674,8 @@ d.appendChild(b);
 });
 if(e.nr)d.appendChild(pilNonRenseigne(id));
 flux.appendChild(d);
-}else if(e.mode==='nombre'){
-montreSaisie('nombre');
+}else if(e.mode==='nombre'||e.mode==='etage'){
+montreSaisie(e.mode);
 if(e.nr){var d2=document.createElement('div');d2.className='puces';d2.appendChild(pilNonRenseigne(id));flux.appendChild(d2);}
 }else if(e.mode==='adresse'){montreSaisie('adresse');}
 else if(e.mode==='photos'){montrePhotos();}
@@ -691,6 +706,7 @@ function montreSaisie(mode){
 modeSaisie=mode;form.classList.add('on');
 unite.hidden=mode!=='nombre';
 if(mode==='nombre'){saisie.setAttribute('inputmode','decimal');saisie.placeholder='Exemple : 72';}
+else if(mode==='etage'){saisie.removeAttribute('inputmode');saisie.placeholder='Exemple : 5 sur 7';}
 else{saisie.removeAttribute('inputmode');saisie.placeholder='Numéro et rue…';}
 if(!(window.matchMedia&&matchMedia('(pointer:coarse)').matches))saisie.focus();
 }
@@ -763,8 +779,10 @@ if(mEst)val=+mEst[1].replace(/ /g,'');if(mF){bas=+mF[1].replace(/ /g,'');haut=+m
 var ETAT={neuf:'Neuf ou refait à neuf',bon:'Bon état',a_rafraichir:'À rafraîchir',a_renover:'À rénover'},ETAGE={rdc:'Rez-de-chaussée',intermediaire:'Étage intermédiaire',dernier:'Dernier étage'},MIT={independante:'Indépendante',un_cote:'Mitoyenne d’un côté',deux_cotes:'Mitoyenne des deux côtés'};
 var maison=e.type==='maison';
 var lignes=[['Adresse du bien',o.adresse_reconnue||e.adresse||'',true],['Type de bien',maison?'Maison':'Appartement'],['Surface',typo((e.surface_m2||'')+' m²')],['Pièces',e.pieces||'Non renseigné'],['État général',ETAT[e.etat]||'Non renseigné'],['DPE (étiquette énergie)',e.dpe||'Non renseigné']];
+var rEtage=e.etage_precision||ETAGE[e.etage];
 if(maison){lignes.push(['Terrain',typeof e.jardin_m2==='number'?typo(e.jardin_m2+' m²'):'Non renseigné'],['Mitoyenneté',MIT[e.mitoyennete]||'Non renseignée'],['Garage',e.garage?'Oui':'Non renseigné']);}
-else{lignes.push(['Étage',ETAGE[e.etage]||'Non renseigné'],['Ascenseur',e.ascenseur===true?'Oui':e.ascenseur===false?'Non':'Non renseigné'],['Balcon / terrasse',typeof e.terrasse_m2==='number'?typo(e.terrasse_m2+' m²'):'Non renseigné'],['Parking (places)',typeof e.parkings==='number'?e.parkings:'Non renseigné']);}
+else{lignes.push(['Étage',rEtage||'Non renseigné'],['Ascenseur',e.ascenseur===true?'Oui':e.ascenseur===false?'Non':'Non renseigné'],['Balcon / terrasse',typeof e.terrasse_m2==='number'?typo(e.terrasse_m2+' m²'):'Non renseigné'],['Parking (places)',typeof e.parkings==='number'?e.parkings:'Non renseigné']);}
+if(e.exposition)lignes.push(['Exposition',{sud:'Sud',ouest:'Ouest',est:'Est',nord:'Nord'}[e.exposition]||e.exposition]);
 if(e.vue_mer)lignes.push(['Vue mer','Oui']);
 var esc=function(x){return String(x).replace(/[&<>]/g,function(ch){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[ch];});};
 var h='<p class="marque">NICE.<span>IMMO</span></p><p class="kicker">Étude d’estimation</p>';
@@ -884,6 +902,7 @@ if(dossier.projet)a.projet=dossier.projet; /* ignoré par le moteur, sert à la 
 if(dossier.pieces)a.pieces=dossier.pieces;
 if(dossier.type==='appartement'){
 if(dossier.etage)a.etage=dossier.etage;
+if(dossier.etage_detail)a.etage_precision=dossier.etage_detail;
 if(typeof dossier.ascenseur==='boolean')a.ascenseur=dossier.ascenseur;
 if(typeof dossier.terrasse_m2==='number')a.terrasse_m2=dossier.terrasse_m2;
 if(typeof dossier.parkings==='number')a.parkings=dossier.parkings;
@@ -892,6 +911,7 @@ if(typeof dossier.jardin_m2==='number')a.jardin_m2=dossier.jardin_m2;
 if(dossier.mitoyennete)a.mitoyennete=dossier.mitoyennete;
 if(typeof dossier.garage==='boolean')a.garage=dossier.garage;
 }
+if(dossier.exposition)a.exposition=dossier.exposition;
 if(dossier.etat)a.etat=dossier.etat;
 if(dossier.dpe)a.dpe=dossier.dpe;
 if(typeof dossier.vue_mer==='boolean')a.vue_mer=dossier.vue_mer;
@@ -952,6 +972,7 @@ if(e.etage==='dernier')aj.push('dernier étage, à la hausse');
 if(e.etage==='rdc')aj.push('rez-de-chaussée, à la baisse');
 if(e.ascenseur&&e.etage!=='rdc')aj.push('ascenseur, à la hausse');
 if(e.vue_mer)aj.push('vue mer, à la hausse');
+if(e.exposition)aj.push('exposition '+e.exposition+(e.exposition==='sud'?', à la hausse':e.exposition==='nord'?', à la baisse':', neutre'));
 if(typeof e.terrasse_m2==='number'&&e.terrasse_m2>0)aj.push('extérieur de '+e.terrasse_m2+' m², à la hausse');
 if(e.parkings)aj.push(e.parkings+' place'+(e.parkings>1?'s':'')+' de parking, à la hausse');
 if(e.surface_m2<50)aj.push('petite surface, prix au m² à la hausse');else if(e.surface_m2>100)aj.push('grande surface, prix au m² à la baisse');
@@ -1011,6 +1032,14 @@ if(occupe||!modeSaisie)return;
 var t=saisie.value.trim();
 if(!t)return;
 var e=ETAPES[etapeCourante]||{};
+if(modeSaisie==='etage'){
+  var pe=parseEtage(t);
+  if(!pe){bulleErreurSaisie('Indiquez l’étage et le nombre d’étages de l’immeuble, par exemple « 5 sur 7 », ou écrivez « rez-de-chaussée » ou « dernier ».');return;}
+  saisie.value='';
+  dossier.etage=pe.etage;dossier.etage_detail=pe.detail;
+  repondu.etage=true;suite();
+  return;
+}
 if(modeSaisie==='nombre'){
   var n=parseFloat(t.replace(',','.').replace(/[^0-9.]/g,''));
   if(!isFinite(n)||n<(e.min||1)||n>(e.max||100000)){bulleErreurSaisie('Indiquez une surface en m², entre '+(e.min||1)+' et '+e.max+'.');return;}
