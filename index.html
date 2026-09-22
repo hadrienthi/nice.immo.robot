@@ -392,10 +392,14 @@ m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
 return 1-m[a.length][b.length]/Math.max(a.length,b.length);
 }
 async function geocodeVille(adresse){
-var res=await fetch(BAN+'?'+new URLSearchParams({q:adresse,citycode:VILLE.citycode,limit:1}));
+var res=await fetch(BAN+'?'+new URLSearchParams({q:adresse,citycode:VILLE.citycode,limit:5}));
 if(!res.ok)throw new Error('service adresse indisponible');
 var data=await res.json();
-var ft=(data.features||[]).filter(function(f){return f.properties.citycode===VILLE.citycode;})[0];
+var fts=(data.features||[]).filter(function(f){return f.properties.citycode===VILLE.citycode;});
+var ft=fts[0];
+/* bug du 22/9 (constat Hadrien) : la BAN peut classer la voie seule avant le
+   numéro ; une adresse qui commence par un numéro doit résoudre sur un numéro */
+if(/^\s*\d/.test(adresse)){var hn=fts.filter(function(f){return f.properties.type==='housenumber';})[0];if(hn)ft=hn;}
 if(!ft)throw new Error('adresse introuvable à '+VILLE.nom);
 var demandee=normaliseVoie(adresse),trouvee=normaliseVoie(ft.properties.street||ft.properties.name||ft.properties.label);
 if(demandee&&trouvee){
@@ -448,7 +452,8 @@ if(!estMaison){
   if(a.mitoyennete==='un_cote')coef-=0.05;if(a.mitoyennete==='deux_cotes')coef-=0.10;
   if(typeof a.jardin_m2==='number'){if(a.jardin_m2<100)coef-=0.06;else if(a.jardin_m2>1000)coef+=0.12;else if(a.jardin_m2>500)coef+=0.06;}
 }
-if(a.vue_mer)coef+=0.12;
+if(a.vue==='mer'||a.vue_mer)coef+=0.12; /* vue_mer conservé pour compatibilité */
+else if(a.vue==='degagee')coef+=0.03; /* sans vis-à-vis (22/9) : bonus prudent, à faire valider par le père */
 /* exposition (21/9, décision fonctionnelle du 1/9) : barème PRUDENT dans
    l'esprit du DPE modéré, sud +3 %, nord -3 %, est et ouest neutres ;
    ordre de grandeur des études notariales et portails, À FAIRE VALIDER
@@ -526,7 +531,7 @@ flux.appendChild(d);return d;
 }
 /* ---- catalogue des étapes : celui des puces du 18/9, sans l'occupation ni la
    date de construction (aucun champ moteur : règle d'honnêteté) ---- */
-var LBL_ETAT={'Neuf':'neuf','Bon état':'bon','À rafraîchir':'a_rafraichir','À rénover':'a_renover'};
+var LBL_ETAT={'Bon état':'bon','À rafraîchir':'a_rafraichir','À rénover':'a_renover'}; /* barreau « neuf » retiré du parcours (décision Hadrien 22/9), l'enum moteur reste */
 var LBL_MIT={'Indépendante':'independante','Mitoyenne d’un côté':'un_cote','Mitoyenne des deux côtés':'deux_cotes'};
 var ETAPES={
 projet:{question:function(){return 'Quel est votre projet à Nice ?';},mode:'puces',
@@ -565,9 +570,9 @@ garage:{seulement:'maison',question:function(){return 'La maison a-t-elle un gar
  applique:function(r){dossier.garage=r==='Avec garage';},efface:function(){delete dossier.garage;},
  chip:function(){return dossier.garage===true?'Avec garage':dossier.garage===false?'Sans garage':null;},nom:'Garage'},
 etat:{question:function(){return 'Dans quel état général est le bien ?';},mode:'puces',nr:true,
- options:function(){return ['Neuf','Bon état','À rafraîchir','À rénover'];},
+ options:function(){return ['Bon état','À rafraîchir','À rénover'];},
  applique:function(r){dossier.etat=LBL_ETAT[r];},efface:function(){delete dossier.etat;},
- chip:function(){return {neuf:'Neuf',bon:'Bon état',a_rafraichir:'À rafraîchir',a_renover:'À rénover'}[dossier.etat]||null;},nom:'État'},
+ chip:function(){return {bon:'Bon état',a_rafraichir:'À rafraîchir',a_renover:'À rénover'}[dossier.etat]||null;},nom:'État'},
 dpe:{question:function(){return 'Quelle est l’étiquette énergie du bien (DPE) ?';},mode:'puces',nr:true,
  options:function(){return ['A','B','C','D','E','F','G'];},
  applique:function(r){dossier.dpe=r;},efface:function(){delete dossier.dpe;},
@@ -589,11 +594,11 @@ parking:{seulement:'appartement',question:function(){return 'Le bien dispose-t-i
  options:function(){return ['Pas de parking','1 place','2 places ou plus'];},
  applique:function(r){dossier.parkings=r==='Pas de parking'?0:r==='1 place'?1:2;},efface:function(){delete dossier.parkings;},
  chip:function(){return typeof dossier.parkings!=='number'?null:dossier.parkings===0?'Pas de parking':dossier.parkings===1?'1 parking':'2 parkings ou plus';},nom:'Parking'},
-vue:{question:function(){return 'Le bien a-t-il une vue mer ?';},mode:'puces',
- options:function(){return ['Vue mer','Sans vue mer'];},
- applique:function(r){dossier.vue_mer=r==='Vue mer';},
- chip:function(){return dossier.vue_mer===true?'Vue mer':dossier.vue_mer===false?'Sans vue mer':null;},nom:'Vue'},
-photos:{question:function(){return 'Souhaitez-vous ajouter des photos du bien ? Jusqu’à 3, c’est facultatif ; elles ne sont jamais conservées.';},mode:'photos',chip:function(){return null;}}
+vue:{question:function(){return 'Quelle est la vue depuis le bien ?';},mode:'puces',
+ options:function(){return ['Vue mer','Sans vis-à-vis','Vue ville'];}, /* exclusives : on choisit la meilleure qui s'applique */
+ applique:function(r){dossier.vue=r==='Vue mer'?'mer':r==='Sans vis-à-vis'?'degagee':'ville';},
+ chip:function(){return {mer:'Vue mer',degagee:'Sans vis-à-vis',ville:'Vue ville'}[dossier.vue]||null;},nom:'Vue'},
+photos:{question:function(){return 'Souhaitez-vous ajouter jusqu’à 3 photos du bien ? Elles ne sont jamais conservées.';},mode:'photos',chip:function(){return null;}}
 };
 function parseEtage(t){
 var s=String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
@@ -612,7 +617,7 @@ return null;
 }
 function ordre(){
 var o=['projet','adresse','type','surface','pieces'];
-o=o.concat(dossier.type==='maison'?['terrain','mitoyennete','garage','etat','dpe','exposition','vue']:['etage','ascenseur','etat','dpe','exterieur','ext_surface','parking','exposition','vue']);
+o=o.concat(dossier.type==='maison'?['terrain','mitoyennete','garage','etat','dpe','vue','exposition']:['etage','ascenseur','etat','dpe','vue','exterieur','ext_surface','exposition','parking']);
 o.push('photos');
 return o.filter(function(id){var e=ETAPES[id];return !(e.passe&&e.passe());});
 }
@@ -725,11 +730,16 @@ clearTimeout(suggMinuterie);
 var t=saisie.value.trim();
 if(t.length<4){suggEfface();return;}
 suggMinuterie=setTimeout(function(){
-fetch(BAN+'?'+new URLSearchParams({q:t,citycode:VILLE.citycode,limit:4,autocomplete:1}))
+fetch(BAN+'?'+new URLSearchParams({q:t,citycode:VILLE.citycode,limit:6,autocomplete:1}))
 .then(function(r){return r.ok?r.json():null;})
 .then(function(j){
 if(modeSaisie!=='adresse')return;
 var fts=((j&&j.features)||[]).filter(function(f){return f.properties.citycode===VILLE.citycode;});
+/* un numéro tapé -> uniquement des propositions AU numéro (jamais la voie
+   seule, qui ferait perdre le numéro au clic) ; sans numéro, voies et
+   numéros sont proposés */
+var avecNum=/^\s*\d/.test(t);
+fts=fts.filter(function(f){var ty=f.properties.type;return avecNum?ty==='housenumber':(ty==='housenumber'||ty==='street');});
 suggEfface();
 if(!fts.length)return;
 suggZone=document.createElement('div');suggZone.className='puces';
@@ -776,14 +786,14 @@ var val=m.valeur,bas=m.fourchette_probable&&m.fourchette_probable.basse,haut=m.f
 var t=dernierTexte.replace(/\u202f/g,' ');
 var mEst=t.match(/Estimation\s*:\s*([\d ]+)€/),mF=t.match(/Fourchette probable\s*:\s*([\d ]+)(?:€)?\s*(?:à|-|–)\s*([\d ]+)€/),mP=t.match(/≈\s*([\d ]+)€\/m²/);
 if(mEst)val=+mEst[1].replace(/ /g,'');if(mF){bas=+mF[1].replace(/ /g,'');haut=+mF[2].replace(/ /g,'');}if(mP)pm2=+mP[1].replace(/ /g,'');
-var ETAT={neuf:'Neuf ou refait à neuf',bon:'Bon état',a_rafraichir:'À rafraîchir',a_renover:'À rénover'},ETAGE={rdc:'Rez-de-chaussée',intermediaire:'Étage intermédiaire',dernier:'Dernier étage'},MIT={independante:'Indépendante',un_cote:'Mitoyenne d’un côté',deux_cotes:'Mitoyenne des deux côtés'};
+var ETAT={neuf:'Excellent état',bon:'Bon état',a_rafraichir:'À rafraîchir',a_renover:'À rénover'},ETAGE={rdc:'Rez-de-chaussée',intermediaire:'Étage intermédiaire',dernier:'Dernier étage'},MIT={independante:'Indépendante',un_cote:'Mitoyenne d’un côté',deux_cotes:'Mitoyenne des deux côtés'};
 var maison=e.type==='maison';
 var lignes=[['Adresse du bien',o.adresse_reconnue||e.adresse||'',true],['Type de bien',maison?'Maison':'Appartement'],['Surface',typo((e.surface_m2||'')+' m²')],['Pièces',e.pieces||'Non renseigné'],['État général',ETAT[e.etat]||'Non renseigné'],['DPE (étiquette énergie)',e.dpe||'Non renseigné']];
 var rEtage=e.etage_precision||ETAGE[e.etage];
 if(maison){lignes.push(['Terrain',typeof e.jardin_m2==='number'?typo(e.jardin_m2+' m²'):'Non renseigné'],['Mitoyenneté',MIT[e.mitoyennete]||'Non renseignée'],['Garage',e.garage?'Oui':'Non renseigné']);}
 else{lignes.push(['Étage',rEtage||'Non renseigné'],['Ascenseur',e.ascenseur===true?'Oui':e.ascenseur===false?'Non':'Non renseigné'],['Balcon / terrasse',typeof e.terrasse_m2==='number'?typo(e.terrasse_m2+' m²'):'Non renseigné'],['Parking (places)',typeof e.parkings==='number'?e.parkings:'Non renseigné']);}
 if(e.exposition)lignes.push(['Exposition',{sud:'Sud',ouest:'Ouest',est:'Est',nord:'Nord'}[e.exposition]||e.exposition]);
-if(e.vue_mer)lignes.push(['Vue mer','Oui']);
+if(e.vue||e.vue_mer)lignes.push(['Vue',(e.vue==='mer'||e.vue_mer)?'Vue mer':e.vue==='degagee'?'Sans vis-à-vis':'Vue ville']);
 var esc=function(x){return String(x).replace(/[&<>]/g,function(ch){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[ch];});};
 var h='<p class="marque">NICE.<span>IMMO</span></p><p class="kicker">Étude d’estimation</p>';
 h+='<div class="bien">'+lignes.map(function(l){return '<div'+(l[2]?' class="large"':'')+'><b>'+esc(l[0])+'</b>'+typo(' : ')+esc(l[1])+'</div>';}).join('')+'</div>';
@@ -796,7 +806,7 @@ var MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','o
 comps.forEach(function(k){var d=String(k.date||''),dt=d.length>=7?MOIS[+d.slice(5,7)-1]+' '+d.slice(0,4):d;
 h+='<tr><td>'+esc(k.adresse)+'</td><td>'+(k.type==='maison'?'Maison':'Appt')+(k.pieces?' T'+k.pieces:'')+'</td><td class="num">'+typo(k.surface_m2+' m²')+'</td><td class="num">'+typo(String(k.prix_m2).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' €/m²')+'</td><td class="num">'+typo(k.distance_m+' m')+'</td><td>'+esc(dt)+'</td></tr>';});
 h+='</tbody></table>';}
-h+='<p class="kicker">Méthodologie</p><p class="methode">'+typo('Base : '+(m.base_m2_ponderee?'prix moyen de '+String(m.base_m2_ponderee).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' €/m² ':'')+(c.methode==='ventes locales pondérées par distance et récence'?'(ventes réelles 2023-2025 autour de l’adresse, pondérées par la distance et la récence)':'(moyenne communale, faute de ventes suffisantes à proximité)')+', ajusté selon l’état, la surface, le DPE et la vue mer, puis selon le type : étage, ascenseur, terrasse et parking pour un appartement ; mitoyenneté, taille du terrain et garage pour une maison. Fourchette : ± 10 %. '+(c.regle_meme_immeuble&&c.regle_meme_immeuble.indexOf('appliquée')===0?'Base recentrée sur les ventes récentes enregistrées à moins de 50 m (même immeuble ou voisinage immédiat). ':'')+(c.dpe&&c.dpe.indexOf('non')===0?'DPE non renseigné : hypothèse d’une étiquette médiane (D ou E). ':'')+'Cette estimation ne tient pas compte des spécificités du bien ou de l’immeuble : résidence services, bail commercial, monopropriété, charges exceptionnelles, travaux votés, vue ou état particuliers. Pour ces biens, la valeur réelle peut s’écarter fortement de l’estimation : consultez un professionnel local.')+'</p>';
+h+='<p class="kicker">Méthodologie</p><p class="methode">'+typo('Base : '+(m.base_m2_ponderee?'prix moyen de '+String(m.base_m2_ponderee).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' €/m² ':'')+(c.methode==='ventes locales pondérées par distance et récence'?'(ventes réelles 2023-2025 autour de l’adresse, les plus proches et les plus récentes pesant davantage)':'(moyenne communale, faute de ventes suffisantes à proximité)')+', ajusté selon l’état, la surface, le DPE et la vue mer, puis selon le type : étage, ascenseur, terrasse et parking pour un appartement ; mitoyenneté, taille du terrain et garage pour une maison. Fourchette : ± 10 %. '+(c.regle_meme_immeuble&&c.regle_meme_immeuble.indexOf('appliquée')===0?'Base recentrée sur les ventes récentes enregistrées à moins de 50 m (même immeuble ou voisinage immédiat). ':'')+(c.dpe&&c.dpe.indexOf('non')===0?'DPE non renseigné : hypothèse d’une étiquette médiane (D ou E). ':'')+'Cette estimation ne tient pas compte des spécificités du bien ou de l’immeuble : résidence services, bail commercial, monopropriété, charges exceptionnelles, travaux votés, vue ou état particuliers. Pour ces biens, la valeur réelle peut s’écarter fortement de l’estimation : consultez un professionnel local.')+'</p>';
 var dj=new Date();
 h+='<p class="pied">Estimation indicative calculée à partir des données officielles (DVF, DGFiP), sans valeur d’expertise. nice.immo · '+('0'+dj.getDate()).slice(-2)+'/'+('0'+(dj.getMonth()+1)).slice(-2)+'/'+dj.getFullYear()+' · Motoriste IA.IMMO</p>';
 R.innerHTML=h;
@@ -914,7 +924,7 @@ if(typeof dossier.garage==='boolean')a.garage=dossier.garage;
 if(dossier.exposition)a.exposition=dossier.exposition;
 if(dossier.etat)a.etat=dossier.etat;
 if(dossier.dpe)a.dpe=dossier.dpe;
-if(typeof dossier.vue_mer==='boolean')a.vue_mer=dossier.vue_mer;
+if(dossier.vue)a.vue=dossier.vue;
 return a;
 }
 async function lanceEstimation(){
@@ -959,19 +969,21 @@ var l=['Estimation : '+fmt(m.valeur)+' €',
 'Fourchette probable : '+fmt(m.fourchette_probable.basse)+' à '+fmt(m.fourchette_probable.haute)+' €',
 '≈ '+fmt(m.prix_m2)+' €/m²','','Pourquoi cette estimation ?'];
 /* 1. la base */
-if(c.methode&&c.methode.indexOf('ventes locales')===0)l.push('· Base : '+fmt(m.base_m2_ponderee)+' €/m², calculée sur '+c.nb_ventes_1000m+' ventes réelles à moins de 1 km'+(c.vente_la_plus_proche_m!=null?' (la plus proche à '+c.vente_la_plus_proche_m+' m)':'')+', pondérées par la distance et la récence.');
+if(c.methode&&c.methode.indexOf('ventes locales')===0)l.push('· Base : '+fmt(m.base_m2_ponderee)+' €/m², calculée sur '+c.nb_ventes_1000m+' ventes réelles à moins de 1 km'+(c.vente_la_plus_proche_m!=null?' (la plus proche à '+c.vente_la_plus_proche_m+' m)':'')+'.');
 else l.push('· Base : '+fmt(m.base_m2_ponderee)+' €/m², moyenne communale, faute de ventes suffisantes à proximité.');
 if(c.regle_meme_immeuble&&String(c.regle_meme_immeuble).indexOf('appliquée')===0)l.push('· Des ventes récentes à moins de 50 m (même immeuble ou voisinage immédiat) ont recentré cette base.');
 /* 2. les ajustements réellement comptés : le sens, jamais de pourcentage */
 var aj=[];
-var ETL={neuf:'état neuf, à la hausse',bon:'bon état, neutre',a_rafraichir:'état à rafraîchir, à la baisse',a_renover:'état à rénover, à la baisse'};
+var ETL={neuf:'excellent état, à la hausse',bon:'bon état, neutre',a_rafraichir:'état à rafraîchir, à la baisse',a_renover:'état à rénover, à la baisse'};
 if(e.etat)aj.push(ETL[e.etat]||e.etat);
 if(e.dpe)aj.push('DPE '+e.dpe+('ABC'.indexOf(e.dpe)>=0?', à la hausse':'EFG'.indexOf(e.dpe)>=0?', à la baisse':', neutre'));
 else aj.push('DPE non renseigné (hypothèse d’une étiquette médiane D-E)');
 if(e.etage==='dernier')aj.push('dernier étage, à la hausse');
 if(e.etage==='rdc')aj.push('rez-de-chaussée, à la baisse');
 if(e.ascenseur&&e.etage!=='rdc')aj.push('ascenseur, à la hausse');
-if(e.vue_mer)aj.push('vue mer, à la hausse');
+if(e.vue==='mer'||e.vue_mer)aj.push('vue mer, à la hausse');
+else if(e.vue==='degagee')aj.push('sans vis-à-vis, légèrement à la hausse');
+else if(e.vue==='ville')aj.push('vue ville, neutre');
 if(e.exposition)aj.push('exposition '+e.exposition+(e.exposition==='sud'?', à la hausse':e.exposition==='nord'?', à la baisse':', neutre'));
 if(typeof e.terrasse_m2==='number'&&e.terrasse_m2>0)aj.push('extérieur de '+e.terrasse_m2+' m², à la hausse');
 if(e.parkings)aj.push(e.parkings+' place'+(e.parkings>1?'s':'')+' de parking, à la hausse');
@@ -988,7 +1000,7 @@ l.push('· '+k.adresse+', '+dt+', '+k.surface_m2+' m², '+fmt(k.prix_m2)+' €/m
 });
 /* 4. la confiance, et ce qui manque */
 if(c.gabarit)l.push('· Bien hors du gabarit courant : peu de ventes de taille comparable autour de l’adresse, estimation à prendre avec prudence.');
-l.push('· Confiance : incertitude '+(c.incertitude||'moyenne')+', fourchette de ± 10 %'+(c.incertitude==='forte'?' ; estimation indicative, les ventes proches sont peu nombreuses':'')+'.');
+if(c.incertitude==='forte')l.push('· Peu de ventes proches : cette estimation est indicative.'); /* seule mention de confiance conservée (décision Hadrien 22/9) : le garde-fou d'honnêteté */
 var manque=[];
 if(!e.etat)manque.push('l’état');
 if(!e.dpe)manque.push('le DPE');
@@ -1006,10 +1018,10 @@ function montreAvis(){
 if(noteEnvoyee)return; /* recalcul après correction : ne pas redemander la note */
 bulle('ana','Nice.immo','Comment avez-vous trouvé l’expérience ?');
 var z=document.createElement('div');z.className='smileys';z.setAttribute('role','group');z.setAttribute('aria-label','Notez l’expérience de 1 à 5');
-['😞','😕','😐','🙂','😄'].forEach(function(s,i){
+['😐','🙂','😄'].forEach(function(s,i){ /* notes 3 à 5 (décision Hadrien 22/9) */
   var b=document.createElement('button');b.type='button';b.textContent=s;
-  b.setAttribute('aria-label','Note de '+(i+1)+' sur 5');
-  b.addEventListener('click',function(){envoieNote(i+1,z);});
+  b.setAttribute('aria-label','Note de '+(i+3)+' sur 5');
+  b.addEventListener('click',function(){envoieNote(i+3,z);});
   z.appendChild(b);
 });
 flux.appendChild(z);
@@ -1020,7 +1032,7 @@ p.appendChild(b2);flux.appendChild(p);
 }
 function envoieNote(n,zone){
 if(noteEnvoyee)return;noteEnvoyee=true;
-Array.prototype.forEach.call(zone.children,function(b,i){b.disabled=true;b.classList.toggle('choisi',i===n-1);});
+Array.prototype.forEach.call(zone.children,function(b,i){b.disabled=true;b.classList.toggle('choisi',i===n-3);});
 fetch(WORKER_BASE+'/avis',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({note:n})}).catch(function(){});
 var m=document.createElement('p');m.className='merci';m.textContent='Merci pour votre retour.';
 zone.parentNode.insertBefore(m,zone.nextSibling);recale();
