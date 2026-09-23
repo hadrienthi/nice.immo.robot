@@ -29,7 +29,9 @@
 /* Charte « Classical » (maquette du 4/9, jetons du système du père) */
 :root{
   --color-bg:#f3f2f2;--color-surface:#eae9e9;--color-text:#201f1d;
-  --color-accent:#b68235;--color-accent-100:#fff3e4;--color-accent-200:#ffe3bf;--color-accent-700:#7d5411;
+  /* accent passé de l'or au VERT (décision Hadrien 23/9, à montrer au père) :
+     famille du vert des boutons #1DA851 ; les bleus du wordmark restent */
+  --color-accent:#1da851;--color-accent-100:#e8f6ed;--color-accent-200:#cdecd8;--color-accent-700:#14713a;
   --color-neutral-300:#d7d3d3;--color-neutral-500:#9b9797;--color-neutral-700:#605d5d;--color-neutral-800:#444141;
   --color-divider:rgba(32,31,29,.16);
   --font-heading:"Cormorant Garamond",Georgia,serif;--font-body:"Lora",Georgia,serif;
@@ -152,7 +154,7 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 .jauge-ligne{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
 .jauge-lib{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--color-accent-700)}
 .jauge-barre{height:6px;border-radius:999px;background:var(--color-neutral-300);overflow:hidden}
-.jauge-barre i{display:block;height:100%;width:0;background:#1da851;border-radius:999px;transition:width .4s ease} /* vert des boutons : la progression se voit (demande Hadrien 21/9) */
+.jauge-barre i{display:block;height:100%;width:0;background:var(--color-accent);border-radius:999px;transition:width .4s ease}
 .jauge-avert{font-size:12.5px;color:var(--color-accent-700);margin:6px 0 0}
 @media (prefers-reduced-motion:reduce){.jauge-barre i{transition:none}}
 .recap{display:none;flex-wrap:wrap;gap:6px;padding:0 0 10px}
@@ -531,7 +533,7 @@ flux.appendChild(d);return d;
 }
 /* ---- catalogue des étapes : celui des puces du 18/9, sans l'occupation ni la
    date de construction (aucun champ moteur : règle d'honnêteté) ---- */
-var LBL_ETAT={'Bon état':'bon','À rafraîchir':'a_rafraichir','À rénover':'a_renover'}; /* barreau « neuf » retiré du parcours (décision Hadrien 22/9), l'enum moteur reste */
+var LBL_ETAT={'Excellent état':'neuf','Bon état':'bon','À rafraîchir':'a_rafraichir','Travaux':'a_renover'}; /* échelle du 23/9 (Hadrien) : le barreau haut revient, « Travaux » remplace « À rénover » */
 var LBL_MIT={'Indépendante':'independante','Mitoyenne d’un côté':'un_cote','Mitoyenne des deux côtés':'deux_cotes'};
 var ETAPES={
 projet:{question:function(){return 'Quel est votre projet à Nice ?';},mode:'puces',
@@ -570,9 +572,9 @@ garage:{seulement:'maison',question:function(){return 'La maison a-t-elle un gar
  applique:function(r){dossier.garage=r==='Avec garage';},efface:function(){delete dossier.garage;},
  chip:function(){return dossier.garage===true?'Avec garage':dossier.garage===false?'Sans garage':null;},nom:'Garage'},
 etat:{question:function(){return 'Dans quel état général est le bien ?';},mode:'puces',nr:true,
- options:function(){return ['Bon état','À rafraîchir','À rénover'];},
+ options:function(){return ['Excellent état','Bon état','À rafraîchir','Travaux'];},
  applique:function(r){dossier.etat=LBL_ETAT[r];},efface:function(){delete dossier.etat;},
- chip:function(){return {bon:'Bon état',a_rafraichir:'À rafraîchir',a_renover:'À rénover'}[dossier.etat]||null;},nom:'État'},
+ chip:function(){return {neuf:'Excellent état',bon:'Bon état',a_rafraichir:'À rafraîchir',a_renover:'Travaux'}[dossier.etat]||null;},nom:'État'},
 dpe:{question:function(){return 'Quelle est l’étiquette énergie du bien (DPE) ?';},mode:'puces',nr:true,
  options:function(){return ['A','B','C','D','E','F','G'];},
  applique:function(r){dossier.dpe=r;},efface:function(){delete dossier.dpe;},
@@ -786,7 +788,7 @@ var val=m.valeur,bas=m.fourchette_probable&&m.fourchette_probable.basse,haut=m.f
 var t=dernierTexte.replace(/\u202f/g,' ');
 var mEst=t.match(/Estimation\s*:\s*([\d ]+)€/),mF=t.match(/Fourchette probable\s*:\s*([\d ]+)(?:€)?\s*(?:à|-|–)\s*([\d ]+)€/),mP=t.match(/≈\s*([\d ]+)€\/m²/);
 if(mEst)val=+mEst[1].replace(/ /g,'');if(mF){bas=+mF[1].replace(/ /g,'');haut=+mF[2].replace(/ /g,'');}if(mP)pm2=+mP[1].replace(/ /g,'');
-var ETAT={neuf:'Excellent état',bon:'Bon état',a_rafraichir:'À rafraîchir',a_renover:'À rénover'},ETAGE={rdc:'Rez-de-chaussée',intermediaire:'Étage intermédiaire',dernier:'Dernier étage'},MIT={independante:'Indépendante',un_cote:'Mitoyenne d’un côté',deux_cotes:'Mitoyenne des deux côtés'};
+var ETAT={neuf:'Excellent état',bon:'Bon état',a_rafraichir:'À rafraîchir',a_renover:'Travaux'},ETAGE={rdc:'Rez-de-chaussée',intermediaire:'Étage intermédiaire',dernier:'Dernier étage'},MIT={independante:'Indépendante',un_cote:'Mitoyenne d’un côté',deux_cotes:'Mitoyenne des deux côtés'};
 var maison=e.type==='maison';
 var lignes=[['Adresse du bien',o.adresse_reconnue||e.adresse||'',true],['Type de bien',maison?'Maison':'Appartement'],['Surface',typo((e.surface_m2||'')+' m²')],['Pièces',e.pieces||'Non renseigné'],['État général',ETAT[e.etat]||'Non renseigné'],['DPE (étiquette énergie)',e.dpe||'Non renseigné']];
 var rEtage=e.etage_precision||ETAGE[e.etage];
@@ -974,7 +976,7 @@ else l.push('· Base : '+fmt(m.base_m2_ponderee)+' €/m², moyenne communale, f
 if(c.regle_meme_immeuble&&String(c.regle_meme_immeuble).indexOf('appliquée')===0)l.push('· Des ventes récentes à moins de 50 m (même immeuble ou voisinage immédiat) ont recentré cette base.');
 /* 2. les ajustements réellement comptés : le sens, jamais de pourcentage */
 var aj=[];
-var ETL={neuf:'excellent état, à la hausse',bon:'bon état, neutre',a_rafraichir:'état à rafraîchir, à la baisse',a_renover:'état à rénover, à la baisse'};
+var ETL={neuf:'excellent état, à la hausse',bon:'bon état, neutre',a_rafraichir:'état à rafraîchir, à la baisse',a_renover:'travaux à prévoir, à la baisse'};
 if(e.etat)aj.push(ETL[e.etat]||e.etat);
 if(e.dpe)aj.push('DPE '+e.dpe+('ABC'.indexOf(e.dpe)>=0?', à la hausse':'EFG'.indexOf(e.dpe)>=0?', à la baisse':', neutre'));
 else aj.push('DPE non renseigné (hypothèse d’une étiquette médiane D-E)');
