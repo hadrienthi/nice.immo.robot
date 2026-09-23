@@ -76,7 +76,7 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 .scene{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:0 40px;min-height:380px} /* hauteur posée par ajusteScene() */
 .plate{grid-column:1;grid-row:1/3;height:100%;aspect-ratio:1067/1600;min-height:0}
 .plate img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
-.card{grid-column:2;border:2px solid var(--color-neutral-500);border-radius:var(--radius-md);background:var(--color-bg);box-shadow:var(--shadow-sm);padding:28px 30px 20px;display:flex;flex-direction:column;min-height:0;overflow:hidden;position:relative} /* 23/9 : fond du site + filet renforcé (demande Hadrien) */
+.card{grid-column:2;border:1.5px solid var(--color-neutral-500);border-radius:var(--radius-lg);background:var(--color-bg);box-shadow:var(--shadow-sm);padding:28px 30px 20px;display:flex;flex-direction:column;min-height:0;overflow:hidden;position:relative} /* 23/9 : fond du site, filet 1,5 px, angles ronds */
 .card.glisse{outline:2px dashed var(--color-accent);outline-offset:-6px;background:var(--color-accent-100)}
 .card.glisse::after{content:'Déposez vos photos ici';position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-heading);font-size:28px;color:var(--color-accent-700);background:rgba(255,243,228,.85);pointer-events:none}
 .card-head{display:none;gap:18px;align-items:flex-start;margin-bottom:16px} /* masqué sur ordinateur (le portrait joue ce rôle), affiché sur mobile */
@@ -91,7 +91,7 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 .msg.ana{background:var(--color-surface);border:1px solid var(--color-divider);border-bottom-left-radius:3px;align-self:flex-start}
 .msg.ana{max-width:100%;align-self:stretch} /* réponses de l'assistante sur toute la largeur de la zone (demande du 11/9) */
 .msg.sys{background:none;border:1px dashed var(--color-divider);color:var(--color-neutral-700);font-size:13px;align-self:center;text-align:center}
-.qui{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-700);margin-bottom:4px;font-weight:600}
+.qui{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-700);margin-bottom:4px;font-weight:700}
 .msg.ana .qui{color:var(--color-accent-700)}
 .msg .ph{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
 .msg .ph img{width:92px;height:92px;object-fit:cover;border-radius:6px}
@@ -152,7 +152,8 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 /* Parcours hybride (chantier du 21/9) : jauge, récapitulatif, note d'expérience */
 .jauge{margin:0 0 10px}
 .jauge-ligne{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
-.jauge-lib{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--color-accent-700)}
+.jauge-lib{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--color-text)} /* noir (23/9) */
+.jauge-etape{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700);white-space:nowrap}
 .jauge-barre{height:6px;border-radius:999px;background:var(--color-neutral-300);overflow:hidden}
 .jauge-barre i{display:block;height:100%;width:0;background:var(--color-accent);border-radius:999px;transition:width .4s ease}
 .jauge-avert{font-size:12.5px;color:var(--color-accent-700);margin:6px 0 0}
@@ -191,6 +192,9 @@ form.saisie.on{display:block}
 
 /* Partenariat */
 .partner{display:grid;grid-template-columns:26% 1fr;gap:24px;align-items:center;border-bottom:1px solid var(--color-divider);padding:16px 0 12px;margin-top:16px}
+.partner .btn{background:#001878;border-color:#001878} /* le bleu du titre de l'affiche (23/9) */
+.partner .btn:hover{background:#0a2496;border-color:#0a2496}
+.partner .btn:active{background:#011057;border-color:#011057}
 .partner .btn{justify-self:center}
 
 /* Pied de page */
@@ -287,7 +291,7 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
           </div>
         </div>
         <div class="jauge" id="jauge">
-          <div class="jauge-ligne"><span class="jauge-lib" id="jauge-lib">Votre estimation en PDF dès la fin de l’échange avec l’IA.</span></div>
+          <div class="jauge-ligne"><span class="jauge-lib" id="jauge-lib">Votre estimation en PDF dès la fin de l’échange avec l’IA.</span><span class="jauge-etape" id="jauge-etape">Étape 1 sur 14</span></div>
           <div class="jauge-barre" aria-hidden="true"><i id="jauge-fill"></i></div>
           <p class="jauge-avert" id="jauge-avert" hidden>Plus il y a de réponses, plus l’estimation est précise.</p>
         </div>
@@ -517,7 +521,7 @@ return t
    d'expérience (1 à 5) part vers POST /avis, anonyme. */
 var flux=document.getElementById('flux'),attente=document.getElementById('attente');
 var form=document.getElementById('f'),saisie=document.getElementById('saisie'),envoyer=document.getElementById('envoyer'),unite=document.getElementById('unite');
-var jFill=document.getElementById('jauge-fill'),jLib=document.getElementById('jauge-lib'),jAvert=document.getElementById('jauge-avert'),recapEl=document.getElementById('recap');
+var jFill=document.getElementById('jauge-fill'),jLib=document.getElementById('jauge-lib'),jEtape=document.getElementById('jauge-etape'),jAvert=document.getElementById('jauge-avert'),recapEl=document.getElementById('recap');
 var fichier=document.getElementById('fichier'),vignettes=document.getElementById('vignettes');
 var dossier={},repondu={},photos=[],commentairePhotos='';
 var etapeCourante=null,modeSaisie=null,occupe=false,noteGabarit='',estimationFaite=false,noteEnvoyee=false;
@@ -629,12 +633,11 @@ function changeDeType(){
 }
 /* ---- jauge de progression et récapitulatif cliquable ---- */
 function majJauge(){
-if(estimationFaite){jFill.style.width='100%';jLib.textContent='Votre estimation';return;}
+if(estimationFaite){jFill.style.width='100%';jLib.textContent='Votre estimation';jEtape.textContent='';return;}
 var o=ordre(),total=o.length,faits=0;
 o.forEach(function(id){if(repondu[id])faits++;});
 jFill.style.width=Math.round(faits/(total+1)*100)+'%'; /* +1 : l'estimation elle-même */
-/* ni compteur ni libellé d'étape (décisions Hadrien 21/9) : le bandeau
-   porte la promesse PDF, seule la barre avance */
+jEtape.textContent='Étape '+Math.min(faits+1,total)+' sur '+total; /* compteur remis (23/9) */
 }
 function majRecap(){
 recapEl.innerHTML='';
