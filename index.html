@@ -18,17 +18,17 @@
 <meta name="twitter:title" content="Estimation immobilière à Nice par IA | Nice.immo">
 <meta name="twitter:description" content="Votre bien est estimé à partir de 22 118 ventes réelles notariées à Nice depuis 2023. Sans inscription, sans email, sans téléphone.">
 <meta name="twitter:image" content="https://nice.immo/og-nice.jpg">
-<meta name="theme-color" content="#f3f2f2">
+<meta name="theme-color" content="#f9f5ec">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://nice.immo/#site","url":"https://nice.immo/","name":"Nice.immo","inLanguage":"fr","description":"Estimation immobilière à Nice par IA, fondée sur les ventes réelles notariées.","publisher":{"@id":"https://nice.immo/#org"}},{"@type":"Organization","@id":"https://nice.immo/#org","name":"Nice.immo","url":"https://nice.immo/","email":"contact@nice.immo","logo":"https://nice.immo/og-nice.jpg"},{"@type":"WebPage","@id":"https://nice.immo/#page","url":"https://nice.immo/","name":"Estimation immobilière à Nice par IA | Nice.immo","isPartOf":{"@id":"https://nice.immo/#site"},"about":{"@type":"Place","name":"Nice"}}]}</script>
-<link rel="preload" as="image" href="robot-nice-1067.webp" media="(min-width:821px)">
+<link rel="preload" as="image" href="robot-nice-1067-n2.webp" media="(min-width:821px)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
 /* Charte « Classical » (maquette du 4/9, jetons du système du père) */
 :root{
-  --color-bg:#f3f2f2;--color-surface:#eae9e9;--color-text:#201f1d;
+  --color-bg:#f9f5ec;--color-surface:#efe8db;--color-text:#201f1d; /* fond crème (24/9), fini le gris */
   /* accent passé de l'or au VERT (décision Hadrien 23/9, à montrer au père) :
      famille du vert des boutons #1DA851 ; les bleus du wordmark restent */
   --color-accent:#1da851;--color-accent-100:#e8f6ed;--color-accent-200:#cdecd8;--color-accent-700:#1da851; /* un seul vert pour tous les mots (23/9) */
@@ -58,8 +58,8 @@ header.top{border-bottom:1px solid var(--color-divider)}
 header.top .wrap{display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px;padding-top:20px;padding-bottom:20px}
 header.top .brand{justify-self:start}
 header.top nav.menu{justify-self:end}
-.brand{font-family:var(--font-heading);font-size:38px;font-weight:600;line-height:1;letter-spacing:.5px;color:#14309E}
-.brand span{color:#3FA3EF}
+.brand{font-family:var(--font-heading);font-size:38px;font-weight:600;line-height:1;letter-spacing:.5px;color:var(--color-text)} /* encre (24/9), fini le bleu */
+.brand span{color:#1DA851} /* IMMO au vert du site */
 nav.menu{display:flex;align-items:center;gap:28px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
 nav.menu a[aria-current]{color:var(--color-accent-700);border-bottom:1px solid var(--color-accent)}
 
@@ -78,7 +78,7 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 .plate img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
 .card{grid-column:2;border:1.5px solid var(--color-neutral-500);border-radius:var(--radius-lg);background:var(--color-bg);box-shadow:var(--shadow-sm);padding:28px 30px 20px;display:flex;flex-direction:column;min-height:0;overflow:hidden;position:relative} /* 23/9 : fond du site, filet 1,5 px, angles ronds */
 .card.glisse{outline:2px dashed var(--color-accent);outline-offset:-6px;background:var(--color-accent-100)}
-.card.glisse::after{content:'Déposez vos photos ici';position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-heading);font-size:28px;color:var(--color-accent-700);background:rgba(255,243,228,.85);pointer-events:none}
+.card.glisse::after{content:'Déposez vos photos ici';position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-heading);font-size:28px;color:var(--color-accent-700);background:rgba(232,246,237,.9);pointer-events:none}
 .card-head{display:none;gap:18px;align-items:flex-start;margin-bottom:16px} /* masqué sur ordinateur (le portrait joue ce rôle), affiché sur mobile */
 .ana-mark{width:58px;height:58px;border-radius:50%;border:1px solid var(--color-accent);display:grid;place-items:center;flex:none;overflow:hidden;background:var(--color-bg)}
 .ana-mark img{width:100%;height:100%;object-fit:cover;object-position:center}
@@ -88,7 +88,7 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 /* Conversation */
 .flux{position:relative;flex:1;min-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:6px 2px 10px}
 .msg{max-width:84%;padding:11px 15px;border-radius:12px;font-size:15.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:break-word}
-.msg.ana{background:var(--color-surface);border:1px solid var(--color-divider);align-self:flex-start} /* 4 angles ronds (23/9), plus de coin de bulle */
+.msg.ana{background:#fff;border:1px solid var(--color-divider);align-self:flex-start} /* bulles blanches, texte encre, 4 angles ronds */
 .msg.ana{max-width:100%;align-self:stretch} /* réponses de l'assistante sur toute la largeur de la zone (demande du 11/9) */
 .msg.sys{background:none;border:1px dashed var(--color-divider);color:var(--color-neutral-700);font-size:13px;align-self:center;text-align:center}
 .qui{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-700);margin-bottom:4px;font-weight:700}
@@ -137,17 +137,15 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 .puces+.puces{margin-top:-6px}
 .puce.on{background:var(--color-accent-200);border-color:var(--color-accent-700);font-weight:600}
 .puce.on::before{content:'✓\00a0'}
-.puce.sec{border-style:dashed;border-color:var(--color-neutral-500);background:transparent;color:var(--color-neutral-700)} /* porte de sortie : reste discrète */
-.puce.act{background:var(--color-accent)}
-.puce.act:hover{background:#158f45}
+.puce.sec{border-style:dashed;border-color:var(--color-neutral-500);background:transparent;color:var(--color-neutral-700);box-shadow:none} /* porte de sortie : reste discrète */
 .puces .legende{font-size:12.5px;color:var(--color-neutral-700);align-self:center}
 .puces-envoi{align-items:center;gap:14px}
 .puces-envoi .btn{height:34px;padding:0 16px;font-size:12px}
 .puces-envoi .btn:disabled{opacity:.4;cursor:default;background:transparent}
 .puces-envoi span{font-size:13px;color:var(--color-neutral-700)}
-.puce{border:1px solid var(--color-accent);border-radius:999px;background:var(--color-accent);color:#fff;font:inherit;font-size:14px;font-weight:600;line-height:1.2;padding:8px 16px;cursor:pointer} /* aplat vert, texte blanc (23/9, façon bouton GitHub) */
-.puce:hover{background:#158f45;border-color:#158f45}
-.puce:active{background:#117a3a;border-color:#117a3a}
+.puce{border:1px solid var(--color-neutral-300);border-radius:999px;background:#fff;color:var(--color-text);font:inherit;font-size:14px;font-weight:600;line-height:1.2;padding:8px 16px;cursor:pointer;box-shadow:0 1px 2px rgba(45,43,43,.12)} /* blanches, texte encre (24/9, façon maquette) */
+.puce:hover{border-color:var(--color-accent);color:var(--color-accent)}
+.puce:active{background:var(--color-accent-100)}
 
 /* Parcours hybride (chantier du 21/9) : jauge, récapitulatif, note d'expérience */
 .jauge{margin:0 0 10px}
@@ -158,6 +156,10 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 .jauge-barre i{display:block;height:100%;width:0;background:var(--color-accent);border-radius:999px;transition:width .4s ease}
 .jauge-avert{font-size:12.5px;color:var(--color-accent-700);margin:6px 0 0}
 @media (prefers-reduced-motion:reduce){.jauge-barre i{transition:none}}
+.nav-etapes{display:flex;gap:8px;justify-content:flex-end;margin:0 0 4px}
+.nav-etapes button{width:32px;height:32px;border-radius:50%;border:1px solid var(--color-neutral-500);background:#fff;color:var(--color-text);font-size:17px;line-height:1;cursor:pointer;display:grid;place-items:center;font-family:inherit;padding:0}
+.nav-etapes button:hover:not(:disabled){border-color:var(--color-accent);color:var(--color-accent)}
+.nav-etapes button:disabled{opacity:.3;cursor:default}
 .recap{display:none;flex-wrap:wrap;gap:6px;padding:0 0 10px}
 .recap.on{display:flex}
 .chip{border:1px solid var(--color-divider);border-radius:999px;background:var(--color-surface);color:var(--color-text);font:inherit;font-size:12.5px;line-height:1.2;padding:5px 12px;cursor:pointer}
@@ -179,10 +181,10 @@ main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
 .vign button{position:absolute;top:-7px;right:-7px;width:19px;height:19px;line-height:1;border-radius:50%;padding:0;font-size:11px;border:1px solid var(--color-accent);background:var(--color-bg);color:var(--color-accent-700);cursor:pointer}
 form.saisie{margin-top:auto;padding-top:10px;display:none} /* visible seulement pour l'adresse et les surfaces */
 form.saisie.on{display:block}
-.champ{min-height:70px;border:1px solid var(--color-neutral-300);border-radius:var(--radius-lg);background:var(--color-bg);display:flex;align-items:center;padding:6px 8px 6px 20px;gap:12px}
+.champ{min-height:56px;border:1px solid var(--color-neutral-300);border-radius:var(--radius-lg);background:#fff;display:flex;align-items:center;padding:6px 8px 6px 20px;gap:12px}
 .champ input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:16px;line-height:1.5;color:var(--color-text);padding:8px 0;outline:none}
 .champ input::placeholder{color:var(--color-neutral-500);font-style:italic}
-.envoyer{width:54px;height:54px;border:1px solid var(--color-accent);border-radius:50%;background:var(--color-accent);display:grid;place-items:center;color:#fff;cursor:pointer;flex:none}
+.envoyer{width:42px;height:42px;border:1px solid var(--color-accent);border-radius:50%;background:var(--color-accent);display:grid;place-items:center;color:#fff;cursor:pointer;flex:none}
 .envoyer:hover{background:#158f45;border-color:#158f45}
 .envoyer:disabled{opacity:.4;cursor:default}
 
@@ -192,9 +194,9 @@ form.saisie.on{display:block}
 
 /* Partenariat */
 .partner{display:grid;grid-template-columns:26% 1fr;gap:24px;align-items:center;border-bottom:1px solid var(--color-divider);padding:16px 0 12px;margin-top:16px}
-.partner .btn{background:#001878;border-color:#001878} /* le bleu du titre de l'affiche (23/9) */
-.partner .btn:hover{background:#0a2496;border-color:#0a2496}
-.partner .btn:active{background:#011057;border-color:#011057}
+.partner .btn{background:#fff;border:1px solid var(--color-neutral-500);color:var(--color-text)} /* façon maquette du 24/9 : bouton clair */
+.partner .btn:hover{background:var(--color-surface);border-color:var(--color-neutral-700)}
+.partner .btn:active{background:var(--color-neutral-300)}
 .partner .btn{justify-self:center}
 
 /* Pied de page */
@@ -213,8 +215,7 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
   .card-head{margin-bottom:8px}
   .card-head h2{font-size:24px;margin-bottom:2px}
   .card-head p{font-size:16px}
-  .champ{min-height:56px}
-  .envoyer{width:46px;height:46px}
+  .envoyer{width:38px;height:38px}
   .partner-note p{font-size:13px}
   .partner{padding:10px 0 8px;margin-top:10px}
   header.top .wrap{padding-top:12px;padding-bottom:12px}
@@ -255,7 +256,7 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
   .msg{max-width:90%;font-size:15px}
   .champ{min-height:58px;padding:4px 6px 4px 14px;gap:8px}
   .champ input{font-size:16px} /* 16 px minimum : sous ce seuil, iOS et Android zooment sur le champ au focus */
-  .envoyer{width:46px;height:46px}
+  .envoyer{width:38px;height:38px}
   .smileys button{font-size:26px}
   .partner{flex-direction:column;align-items:flex-start;gap:12px}
   footer.bottom .ia{margin-left:0}
@@ -277,10 +278,10 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
 <main>
   <div class="wrap stage">
     <section class="scene" aria-label="Estimation de votre bien">
-      <div class="plate"><img src="robot-nice-1067.webp" width="1067" height="1600" alt="Assistant robot d’estimation immobilière devant la baie des Anges à Nice" fetchpriority="high"></div>
+      <div class="plate"><img src="robot-nice-1067-n2.webp" width="1067" height="1600" alt="Assistant robot d’estimation immobilière devant la baie des Anges à Nice" fetchpriority="high"></div>
       <section class="intro" id="estimer">
       <h1>Vous achetez, vendez ou investissez à Nice ?<br>Estimez un bien avec notre <em>IA spécialisée.</em></h1>
-      <p>Vous obtenez une estimation fondée sur 22 118 ventes à Nice depuis 2023.</p>
+      <p>Vous obtenez une estimation fondée sur 22 118 ventes officielles (données DVF de l’État) à Nice depuis 2023.</p>
   </section>
       <div class="card">
         <div class="card-head">
@@ -296,7 +297,7 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
           <p class="jauge-avert" id="jauge-avert" hidden>Plus il y a de réponses, plus l’estimation est précise.</p>
         </div>
         <div class="recap" id="recap" aria-label="Vos réponses, cliquez pour modifier"></div>
-        <div class="flux" id="flux" aria-live="polite"><div class="msg ana attente" id="attente"><div class="qui">Nice.immo</div><span class="pts" aria-hidden="true"><i></i><i></i><i></i></span><span class="txt">Recherche dans l’historique des ventes autour de votre bien…</span></div></div>
+        <div class="flux" id="flux" aria-live="polite"><div class="msg ana attente" id="attente"><div class="qui">Nice.immo</div><span class="pts" aria-hidden="true"><i></i><i></i><i></i></span><span class="txt">Recherche dans les ventes officielles (DVF) autour de votre bien…</span></div></div>
         <div class="vignettes" id="vignettes"></div>
         <form class="saisie" id="f">
           <div class="champ">
@@ -658,6 +659,19 @@ function montreEtape(id){
 etapeCourante=id;
 videFlux();cacheSaisie();
 var e=ETAPES[id],texte=e.question();
+/* flèches avant / après (24/9) : circuler entre les questions déjà vues */
+if(!estimationFaite){
+var oNav=ordre(),ixNav=oNav.indexOf(id);
+var nv=document.createElement('div');nv.className='nav-etapes';
+var bp=document.createElement('button');bp.type='button';bp.textContent='‹';bp.setAttribute('aria-label','Question précédente');
+bp.disabled=ixNav<=0;
+bp.addEventListener('click',function(){if(occupe)return;var o2=ordre(),i2=o2.indexOf(etapeCourante);if(i2>0)montreEtape(o2[i2-1]);});
+var bs=document.createElement('button');bs.type='button';bs.textContent='›';bs.setAttribute('aria-label','Question suivante');
+bs.disabled=!(repondu[id]&&ixNav<oNav.length-1);
+bs.addEventListener('click',function(){if(occupe)return;var o2=ordre(),i2=o2.indexOf(etapeCourante);if(repondu[etapeCourante]&&i2<o2.length-1)montreEtape(o2[i2+1]);});
+nv.appendChild(bp);nv.appendChild(bs);
+flux.appendChild(nv);
+}
 if(noteGabarit){bulle('sys',null,noteGabarit);noteGabarit='';}
 var d=bulle('ana','Nice.immo','');
 var reduit=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -811,7 +825,7 @@ var MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','o
 comps.forEach(function(k){var d=String(k.date||''),dt=d.length>=7?MOIS[+d.slice(5,7)-1]+' '+d.slice(0,4):d;
 h+='<tr><td>'+esc(k.adresse)+'</td><td>'+(k.type==='maison'?'Maison':'Appt')+(k.pieces?' T'+k.pieces:'')+'</td><td class="num">'+typo(k.surface_m2+' m²')+'</td><td class="num">'+typo(String(k.prix_m2).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' €/m²')+'</td><td class="num">'+typo(k.distance_m+' m')+'</td><td>'+esc(dt)+'</td></tr>';});
 h+='</tbody></table>';}
-h+='<p class="kicker">Méthodologie</p><p class="methode">'+typo('Base : '+(m.base_m2_ponderee?'prix moyen de '+String(m.base_m2_ponderee).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' €/m² ':'')+(c.methode==='ventes locales pondérées par distance et récence'?'(ventes réelles 2023-2025 autour de l’adresse, les plus proches et les plus récentes pesant davantage)':'(moyenne communale, faute de ventes suffisantes à proximité)')+', ajusté selon l’état, la surface, le DPE et la vue mer, puis selon le type : étage, ascenseur, terrasse et parking pour un appartement ; mitoyenneté, taille du terrain et garage pour une maison. Fourchette : ± 10 %. '+(c.regle_meme_immeuble&&c.regle_meme_immeuble.indexOf('appliquée')===0?'Base recentrée sur les ventes récentes enregistrées à moins de 50 m (même immeuble ou voisinage immédiat). ':'')+(c.dpe&&c.dpe.indexOf('non')===0?'DPE non renseigné : hypothèse d’une étiquette médiane (D ou E). ':'')+'Cette estimation ne tient pas compte des spécificités du bien ou de l’immeuble : résidence services, bail commercial, monopropriété, charges exceptionnelles, travaux votés, vue ou état particuliers. Pour ces biens, la valeur réelle peut s’écarter fortement de l’estimation : consultez un professionnel local.')+'</p>';
+h+='<p class="kicker">Méthodologie</p><p class="methode">'+typo('Base : '+(m.base_m2_ponderee?'prix moyen de '+String(m.base_m2_ponderee).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' €/m² ':'')+(c.methode==='ventes locales pondérées par distance et récence'?'(ventes réelles 2023-2025 autour de l’adresse, les plus proches et les plus récentes pesant davantage)':'(moyenne communale, faute de ventes suffisantes à proximité)')+', ajusté selon l’état, la surface, le DPE et la vue mer, puis selon le type : étage, ascenseur, terrasse et parking pour un appartement ; mitoyenneté, taille du terrain et garage pour une maison. Fourchette : ± 10 %. '+(c.regle_meme_immeuble&&c.regle_meme_immeuble.indexOf('appliquée')===0?'Base recentrée sur les ventes récentes enregistrées à moins de 50 m (même immeuble ou voisinage immédiat). ':'')+(c.dpe&&c.dpe.indexOf('non')===0?'DPE non renseigné : hypothèse d’une étiquette médiane (D ou E). ':'')+'Cette estimation ne tient pas compte des spécificités du bien ou de l’immeuble : résidence services, bail commercial, monopropriété, charges exceptionnelles, travaux votés, vue ou état particuliers. Pour ces biens, la valeur réelle peut s’écarter fortement de l’estimation.')+'</p>';
 var dj=new Date();
 h+='<p class="pied">Estimation indicative calculée à partir des données officielles (DVF, DGFiP), sans valeur d’expertise. nice.immo · '+('0'+dj.getDate()).slice(-2)+'/'+('0'+(dj.getMonth()+1)).slice(-2)+'/'+dj.getFullYear()+' · Motoriste IA.IMMO</p>';
 R.innerHTML=h;
@@ -974,7 +988,7 @@ var l=['Estimation : '+fmt(m.valeur)+' €',
 'Fourchette probable : '+fmt(m.fourchette_probable.basse)+' à '+fmt(m.fourchette_probable.haute)+' €',
 '≈ '+fmt(m.prix_m2)+' €/m²','','Pourquoi cette estimation ?'];
 /* 1. la base */
-if(c.methode&&c.methode.indexOf('ventes locales')===0)l.push('· Base : '+fmt(m.base_m2_ponderee)+' €/m², calculée sur '+c.nb_ventes_1000m+' ventes réelles à moins de 1 km'+(c.vente_la_plus_proche_m!=null?' (la plus proche à '+c.vente_la_plus_proche_m+' m)':'')+'.');
+if(c.methode&&c.methode.indexOf('ventes locales')===0)l.push('· Base : '+fmt(m.base_m2_ponderee)+' €/m², calculée sur '+c.nb_ventes_1000m+' ventes officielles DVF à moins de 1 km'+(c.vente_la_plus_proche_m!=null?' (la plus proche à '+c.vente_la_plus_proche_m+' m)':'')+'.');
 else l.push('· Base : '+fmt(m.base_m2_ponderee)+' €/m², moyenne communale, faute de ventes suffisantes à proximité.');
 if(c.regle_meme_immeuble&&String(c.regle_meme_immeuble).indexOf('appliquée')===0)l.push('· Des ventes récentes à moins de 50 m (même immeuble ou voisinage immédiat) ont recentré cette base.');
 /* 2. les ajustements réellement comptés : le sens, jamais de pourcentage */
