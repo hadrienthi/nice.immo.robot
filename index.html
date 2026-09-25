@@ -18,248 +18,226 @@
 <meta name="twitter:title" content="Estimation immobilière à Nice par IA | Nice.immo">
 <meta name="twitter:description" content="Votre bien est estimé à partir de 22 118 ventes réelles notariées à Nice depuis 2023. Sans inscription, sans email, sans téléphone.">
 <meta name="twitter:image" content="https://nice.immo/og-nice.jpg">
-<meta name="theme-color" content="#f9f5ec">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://nice.immo/#site","url":"https://nice.immo/","name":"Nice.immo","inLanguage":"fr","description":"Estimation immobilière à Nice par IA, fondée sur les ventes réelles notariées.","publisher":{"@id":"https://nice.immo/#org"}},{"@type":"Organization","@id":"https://nice.immo/#org","name":"Nice.immo","url":"https://nice.immo/","email":"contact@nice.immo","logo":"https://nice.immo/og-nice.jpg"},{"@type":"WebPage","@id":"https://nice.immo/#page","url":"https://nice.immo/","name":"Estimation immobilière à Nice par IA | Nice.immo","isPartOf":{"@id":"https://nice.immo/#site"},"about":{"@type":"Place","name":"Nice"}}]}</script>
-<link rel="preload" as="image" href="robot-nice-1067-n2.webp" media="(min-width:821px)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
-/* Charte « Classical » (maquette du 4/9, jetons du système du père) */
+/* Peau « maquette du père » (25/9) : noir, blanc pur, rouge #FF0000 sur « IA »
+   seulement ; une colonne, sans robot ni image, tout en HTML/CSS. Le moteur,
+   le parcours, le worker et la recette sont ceux de l'index du 25/9 au soir. */
 :root{
-  --color-bg:#f9f5ec;--color-surface:#efe8db;--color-text:#201f1d; /* fond crème (24/9), fini le gris */
-  /* accent passé de l'or au VERT (décision Hadrien 23/9, à montrer au père) :
-     famille du vert des boutons #1DA851 ; les bleus du wordmark restent */
-  --color-accent:#1da851;--color-accent-100:#e8f6ed;--color-accent-200:#cdecd8;--color-accent-700:#1da851; /* un seul vert pour tous les mots (23/9) */
-  --color-neutral-300:#d7d3d3;--color-neutral-500:#9b9797;--color-neutral-700:#605d5d;--color-neutral-800:#444141;
-  --color-divider:rgba(32,31,29,.16);
-  --font-heading:"Cormorant Garamond",Georgia,serif;--font-body:"Lora",Georgia,serif;
-  --radius-sm:2px;--radius-md:4px;--radius-lg:12px;
-  --shadow-sm:0 1px 2px rgba(45,43,43,.14);
-  --pad:48px;--maxw:1480px;
+  --color-bg:#fff;--color-surface:#f3f3f3;--color-text:#111;
+  --rouge:#ff0000; /* le rouge de la maquette (échantillonné : #FE0000) */
+  --color-accent:#111;--color-accent-100:#f3f3f3;--color-accent-200:#e6e6e6;--color-accent-700:#111;
+  --color-neutral-300:#d9d9d9;--color-neutral-500:#9a9a9a;--color-neutral-700:#444;--color-neutral-800:#222;
+  --color-divider:#d9d9d9;
+  --font-heading:"EB Garamond",Georgia,serif;--font-body:"EB Garamond",Georgia,serif;
+  --radius-lg:12px;
+  --pad:52px;--maxw:1665px;
 }
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:16px;line-height:1.6;min-height:100vh;display:flex;flex-direction:column}
+body{font-variant-numeric:lining-nums;margin:0;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:18px;line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
 a{color:inherit;text-decoration:none}
-a:hover{color:var(--color-accent-700)}
 img{display:block;max-width:100%;height:auto}
-h1,h2,h3{font-family:var(--font-heading);font-weight:600;line-height:1.12;letter-spacing:.2px;margin:0;text-wrap:balance}
+h1,h2,h3{font-family:var(--font-heading);margin:0;text-wrap:balance}
 p{margin:0}
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--pad);width:100%}
-.btn{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 26px;border:1px solid var(--color-accent);border-radius:var(--radius-sm);color:#fff;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;background:var(--color-accent);cursor:pointer;font-family:inherit} /* aplat vert (23/9) */
-.btn:hover{background:#158f45;border-color:#158f45}
-.btn:active{background:#117a3a;border-color:#117a3a}
-:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px}
+.rouge{color:var(--rouge)}
+svg.ico{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;display:block}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:14px;height:56px;padding:0 30px;border:1px solid #111;border-radius:999px;color:#fff;background:#111;font-family:var(--font-body);font-size:19px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;cursor:pointer}
+.btn:hover{background:#333;border-color:#333}
+:focus-visible{outline:2px solid #111;outline-offset:3px}
 
 /* En-tête */
-header.top{border-bottom:1px solid var(--color-divider)}
-header.top .wrap{display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px;padding-top:20px;padding-bottom:20px}
-header.top .brand{justify-self:start}
-header.top nav.menu{justify-self:end}
-.brand{font-family:var(--font-heading);font-size:38px;font-weight:600;line-height:1;letter-spacing:.5px;color:var(--color-text)} /* encre (24/9), fini le bleu */
-.brand span{color:#1DA851} /* IMMO au vert du site */
-nav.menu{display:flex;align-items:center;gap:28px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
-nav.menu a[aria-current]{color:var(--color-accent-700);border-bottom:1px solid var(--color-accent)}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:24px;padding-top:18px;padding-bottom:18px;background:linear-gradient(#111,#111) bottom center/calc(100% - 2*var(--pad)) 1px no-repeat} /* filet dans les marges, comme la maquette */
+.brand{font-family:var(--font-heading);font-size:59px;font-weight:600;line-height:1;letter-spacing:-.01em;color:#111}
+nav.menu{display:flex;align-items:center;gap:44px;font-size:19px;letter-spacing:.05em;text-transform:uppercase}
+nav.menu a{padding:6px 0;border-bottom:2px solid transparent}
+nav.menu a:hover{border-bottom-color:#111}
+nav.menu a[aria-current]{border-bottom-color:#111}
 
-/* Héros */
-main{flex:1;display:flex;flex-direction:column;padding:22px 0 0;min-height:0}
-.stage{flex:1;display:flex;flex-direction:column;min-height:0;max-width:none;padding-left:0}
-.intro{grid-column:2;text-align:center;max-width:1100px;margin:0 auto;padding:0 var(--pad)}
-.intro h1{font-size:52px;font-weight:500;margin:0 0 16px}
-.intro h1 em{font-style:italic;font-weight:700;color:#1DA851}
-.intro p{font-size:19px;line-height:1.6;color:var(--color-neutral-700);max-width:860px;margin:0 auto 24px}
+/* Titre */
+main{flex:1;padding:0 0 10px}
+.intro{text-align:center;padding:clamp(28px,3.8vw,62px) 0 clamp(26px,2.9vw,46px)}
+.intro h1{font-size:clamp(34px,4.85vw,82px);font-weight:700;line-height:1.1;letter-spacing:-.035em}
+.intro h1 .l2{display:block}
+.intro .sans{font-size:clamp(14px,1.62vw,27px);letter-spacing:.06em;text-transform:uppercase;margin-top:clamp(6px,.6vw,10px);font-weight:500}
 
-/* Scène : portrait + dialogue */
-/* la scène prend la hauteur restante de la fenêtre (élastique) : rien ne dépasse, la conversation défile dans la carte, le portrait ne bouge pas quand on parle ; sous 380 px de place, la page défile */
-.scene{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:0 40px;min-height:380px} /* hauteur posée par ajusteScene() */
-.plate{grid-column:1;grid-row:1/3;height:100%;aspect-ratio:1067/1600;min-height:0}
-.plate img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block}
-.card{grid-column:2;border:1.5px solid var(--color-neutral-500);border-radius:var(--radius-lg);background:var(--color-bg);box-shadow:var(--shadow-sm);padding:28px 30px 20px;display:flex;flex-direction:column;min-height:0;overflow:hidden;position:relative} /* 23/9 : fond du site, filet 1,5 px, angles ronds */
-.card.glisse{outline:2px dashed var(--color-accent);outline-offset:-6px;background:var(--color-accent-100)}
-.card.glisse::after{content:'Déposez vos photos ici';position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-heading);font-size:28px;color:var(--color-accent-700);background:rgba(232,246,237,.9);pointer-events:none}
-.card-head{display:none;gap:18px;align-items:flex-start;margin-bottom:16px} /* masqué sur ordinateur (le portrait joue ce rôle), affiché sur mobile */
-.ana-mark{width:58px;height:58px;border-radius:50%;border:1px solid var(--color-accent);display:grid;place-items:center;flex:none;overflow:hidden;background:var(--color-bg)}
-.ana-mark img{width:100%;height:100%;object-fit:cover;object-position:center}
-.card-head h2{font-size:30px;margin:0 0 6px}
-.card-head p{font-size:18px;line-height:1.5;color:var(--color-neutral-800)}
+/* Carte d'échange : elle s'allonge avec son contenu (pas d'ascenseur interne) */
+.card{max-width:1385px;margin:0 auto;border:1px solid #bdbdbd;border-radius:var(--radius-lg);background:#fff;padding:clamp(20px,2.5vw,40px) clamp(18px,2.55vw,42px) clamp(22px,1.8vw,30px);position:relative}
+.card.glisse{outline:2px dashed #111;outline-offset:-8px;background:#f7f7f7}
+.card.glisse::after{content:'Déposez vos photos ici';position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-heading);font-size:32px;font-weight:600;background:rgba(255,255,255,.9);pointer-events:none;border-radius:var(--radius-lg)}
 
-/* Conversation */
-.flux{position:relative;flex:1;min-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:6px 2px 10px}
-.msg{max-width:84%;padding:11px 15px;border-radius:12px;font-size:15.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:break-word}
-.msg.ana{background:#fff;border:1px solid var(--color-divider);align-self:flex-start} /* bulles blanches, texte encre, 4 angles ronds */
-.msg.ana{max-width:100%;align-self:stretch} /* réponses de l'assistante sur toute la largeur de la zone (demande du 11/9) */
-.msg.sys{background:none;border:1px dashed var(--color-divider);color:var(--color-neutral-700);font-size:13px;align-self:center;text-align:center}
-.qui{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-neutral-700);margin-bottom:4px;font-weight:700}
-.msg.ana .qui{color:var(--color-accent-700)}
+.jauge{margin:0}
+.jauge-ligne{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:12px}
+.jauge-lib{font-size:clamp(13px,1.05vw,18px);letter-spacing:.03em;text-transform:uppercase;font-weight:500}
+.jauge-etape{font-size:clamp(14px,1.1vw,19px);font-weight:700;white-space:nowrap}
+.jauge-barre{height:12px;border-radius:999px;background:#e8e8e8;overflow:hidden}
+.jauge-barre i{display:block;height:100%;width:0;background:#111;border-radius:999px;transition:width .4s ease}
+.jauge-avert{font-size:16px;font-style:italic;color:var(--color-neutral-700);margin:10px 0 0}
+@media (prefers-reduced-motion:reduce){.jauge-barre i{transition:none}}
+.sep{height:1px;background:var(--color-divider);margin:22px 0 22px}
+
+.recap{display:none;flex-wrap:wrap;gap:8px;padding:0 0 18px}
+.recap.on{display:flex}
+.chip{border:1px solid #cfcfcf;border-radius:999px;background:#fff;color:#111;font:inherit;font-size:15.5px;line-height:1.2;padding:6px 14px;cursor:pointer}
+.chip:hover{border-color:#111}
+.chip.sec{border-style:dashed;color:var(--color-neutral-700)}
+
+/* Déroulé : une question à la fois */
+.flux{position:relative;display:flex;flex-direction:column;gap:18px;min-height:120px}
+.msg{white-space:pre-wrap;overflow-wrap:break-word}
+.qui{display:none} /* l'étiquette NICE.IMMO des anciennes bulles n'a plus lieu d'être */
+.msg.ana{font-family:var(--font-heading);font-size:clamp(25px,2.05vw,35px);font-weight:600;line-height:1.2;letter-spacing:-.005em}
+.msg.ana.note{font-family:var(--font-body);font-size:19px;font-weight:400;line-height:1.55;border-left:3px solid #111;padding:2px 0 2px 18px}
+.msg.sys{font-size:16px;color:var(--color-neutral-800);border:1px dashed #bdbdbd;border-radius:10px;padding:10px 16px;align-self:flex-start}
+.q-tete{display:flex;gap:18px;align-items:center}
+.q-icone{width:68px;height:68px;border-radius:50%;background:#efefef;display:grid;place-items:center;flex:none}
+.q-icone svg{width:32px;height:32px}
+.q-col{display:flex;flex-direction:column;gap:4px;min-width:0}
+.q-kicker{font-size:clamp(13px,1.05vw,18px);letter-spacing:.05em;text-transform:uppercase;font-weight:500}
 .msg .ph{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
-.msg .ph img{width:92px;height:92px;object-fit:cover;border-radius:6px}
-.attente{display:none}
+.attente{display:none;font-family:var(--font-body)!important;font-size:18px!important;font-weight:400!important}
 .attente.on{display:block;animation:apparait .35s ease-out}
-.pts{display:inline-flex;gap:5px;margin-right:9px;vertical-align:middle}
-.pts i{width:7px;height:7px;border-radius:50%;background:var(--color-accent-700);animation:pulse 1.4s infinite ease-in-out}
+.pts{display:inline-flex;gap:5px;margin-right:10px;vertical-align:middle}
+.pts i{width:8px;height:8px;border-radius:50%;background:#111;animation:pulse 1.4s infinite ease-in-out}
 .pts i:nth-child(2){animation-delay:.2s}
 .pts i:nth-child(3){animation-delay:.4s}
-.attente .txt{color:var(--color-neutral-700)}
 @keyframes pulse{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-2px)}}
 @keyframes apparait{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.pts i{animation:none;opacity:.7}.attente.on{animation:none}}
 
-.cr{display:flex;align-items:center;gap:14px;align-self:flex-start;font-size:13px;color:var(--color-neutral-700);padding:2px 0}
-.cr .btn{height:34px;padding:0 16px;font-size:12px}
-/* impression : le compte-rendu ne garde que la conversation */
-/* Étude d'estimation (compte-rendu imprimable, même structure que biarritz.immo, charte Classical) */
+.nav-etapes{display:flex;gap:10px;justify-content:flex-end;margin:0 0 -8px}
+.nav-etapes.vide{display:none} /* rien à parcourir (première question) : comme la maquette */
+.nav-etapes button{width:40px;height:40px;border-radius:50%;border:1px solid #111;background:#fff;color:#111;font-size:22px;line-height:1;cursor:pointer;display:grid;place-items:center;font-family:inherit;padding:0 0 3px}
+.nav-etapes button:hover:not(:disabled){background:#111;color:#fff}
+.nav-etapes button:disabled{opacity:.25;cursor:default}
+
+/* Réponses : boutons égaux à contour, noirs au survol (arbitrage Hadrien 25/9) */
+.puces{display:flex;flex-wrap:wrap;gap:14px;max-width:100%}
+.puces-grandes{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:20px}
+.puce{border:1px solid #111;border-radius:999px;background:#fff;color:#111;font-family:var(--font-heading);font-size:clamp(19px,1.45vw,24px);font-weight:600;line-height:1.2;padding:12px 26px;min-height:56px;cursor:pointer;transition:background .15s,color .15s}
+.puces-grandes .puce{min-height:clamp(62px,4.7vw,78px);font-size:clamp(21px,1.8vw,30px);font-weight:500;display:flex;align-items:center;justify-content:center;position:relative;padding:10px 64px}
+.puce .fl{position:absolute;right:30px;top:50%;transform:translateY(-50%);width:28px;height:28px}
+@media (hover:hover){.puce:hover{background:#111;color:#fff}} /* pas de survol collant sur écran tactile */
+.puce:active{background:#111;color:#fff}
+.puce.act{background:#111;color:#fff}
+.puce.act:hover{background:#333}
+.puce.sec{border-style:dashed;border-color:#9a9a9a;color:var(--color-neutral-700);font-family:var(--font-body);font-weight:400;font-size:18px;min-height:48px;padding:8px 22px}
+@media (hover:hover){.puce.sec:hover{background:#f3f3f3;color:#111;border-color:#111}}
+.puce.sec:active{background:#f3f3f3;color:#111}
+.puces-grandes+.puces{margin-top:-4px}
+
+/* Résultat (point 9) : l'estimation en gros titre, puis le « Pourquoi » */
+.msg.resultat{white-space:normal;font-family:var(--font-body);font-size:19px;font-weight:400;line-height:1.55}
+.r-valeur{font-family:var(--font-heading);font-size:clamp(34px,3.6vw,60px);font-weight:700;line-height:1.08;letter-spacing:-.025em;margin:0 0 8px}
+.r-sous{font-size:clamp(18px,1.3vw,22px);color:var(--color-neutral-800)}
+.r-titre{font-family:var(--font-heading);font-size:clamp(24px,1.8vw,30px);font-weight:600;margin:26px 0 10px;padding-top:22px;border-top:1px solid var(--color-divider)}
+.r-liste{margin:0;padding:0;list-style:none}
+.r-liste li{position:relative;padding:0 0 8px 22px}
+.r-liste li::before{content:'';position:absolute;left:4px;top:.72em;width:6px;height:6px;border-radius:50%;background:#111}
+.r-p{margin:14px 0 0}
+.r-p+.r-p{margin-top:4px}
+.cr{display:flex;align-items:center;gap:14px}
+.smileys{display:flex;gap:12px;align-self:flex-start;padding:0}
+.smileys button{font-size:34px;line-height:1;background:none;border:0;cursor:pointer;filter:grayscale(1);opacity:.75;padding:2px;transition:filter .15s,opacity .15s,transform .15s}
+.smileys button:hover,.smileys button.choisi{filter:none;opacity:1;transform:scale(1.15)}
+.smileys button:disabled{cursor:default}
+.smileys button:disabled:not(.choisi){opacity:.35}
+.merci{font-size:18px;margin:0}
+.unite{font-size:18px;flex:none;color:var(--color-neutral-700)}
+
+/* Saisie (adresse, surfaces, étage) */
+.vignettes{display:none;gap:10px;padding:14px 0 0}
+.vignettes.on{display:flex}
+.vign{position:relative}
+.vign img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--color-divider)}
+.vign button{position:absolute;top:-8px;right:-8px;width:22px;height:22px;line-height:1;border-radius:50%;padding:0;font-size:13px;border:1px solid #111;background:#fff;color:#111;cursor:pointer}
+form.saisie{padding-top:18px;display:none}
+form.saisie.on{display:block}
+.champ{min-height:64px;border:1px solid #111;border-radius:999px;background:#fff;display:flex;align-items:center;padding:6px 8px 6px 26px;gap:12px}
+.champ input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:20px;line-height:1.4;color:#111;padding:8px 0;outline:none}
+.champ input::placeholder{color:#767676;font-style:italic}
+.envoyer{width:50px;height:50px;border:0;border-radius:50%;background:#111;display:grid;place-items:center;color:#fff;cursor:pointer;flex:none}
+.envoyer:hover{background:#333}
+.envoyer:disabled{opacity:.4;cursor:default}
+
+/* Bande de confiance */
+.confiance{max-width:1385px;margin:0 auto;display:grid;grid-template-columns:1fr 1px 1fr;gap:clamp(20px,3vw,50px);align-items:center;padding:clamp(24px,1.7vw,28px) clamp(18px,2.1vw,34px) clamp(22px,1.5vw,26px)}
+.conf{display:flex;align-items:center;gap:clamp(18px,2.4vw,38px)}
+.conf-icone{width:80px;height:80px;border-radius:50%;background:#efefef;display:grid;place-items:center;flex:none}
+.conf-icone svg{width:36px;height:36px}
+.conf p{font-size:clamp(17px,1.25vw,21px);line-height:1.3}
+.conf .souligne{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.conf-sep{width:1px;height:52px;background:#111}
+
+/* Pied de page (agrandi, demande Hadrien 25/9) */
+footer.bottom .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:14px 38px;padding-top:26px;padding-bottom:30px;font-size:18px;background:linear-gradient(#111,#111) top center/calc(100% - 2*var(--pad)) 1px no-repeat}
+footer.bottom .liens{display:flex;flex-wrap:wrap;gap:12px 38px;margin:0 auto}
+footer.bottom .liens a{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
+footer.bottom .ia{font-family:var(--font-heading);font-size:22px;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+
+/* Étude d'estimation imprimable (inchangée sur le fond, passée au noir) */
 #rapport{display:none}
 @media print{
   @page{margin:16mm 18mm}
   header.top,main,footer.bottom{display:none!important}
   body{background:#fff;color:#000;display:block;min-height:0;font-size:13px;line-height:1.5}
   #rapport{display:block;max-width:720px}
-  #rapport .marque{font-family:var(--font-heading);font-size:34px;font-weight:600;letter-spacing:.5px;margin:0 0 2px}
-  #rapport .marque span{color:var(--color-accent-700)}
-  #rapport .kicker{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--color-accent-700);font-weight:600;margin:14px 0 8px}
+  #rapport .marque{font-family:var(--font-heading);font-size:34px;font-weight:700;letter-spacing:-.01em;margin:0 0 2px}
+  #rapport .kicker{font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;margin:14px 0 8px}
   #rapport .bien{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;font-size:13px}
   #rapport .bien b{font-weight:600}
   #rapport .bien .large{grid-column:1/-1}
-  #rapport .valeur{font-family:var(--font-heading);font-size:46px;font-weight:600;line-height:1.05;margin:0}
-  #rapport .sous{font-size:12.5px;color:#444;margin:6px 0 0}
+  #rapport .valeur{font-family:var(--font-heading);font-size:46px;font-weight:700;line-height:1.05;margin:0}
+  #rapport .sous{font-size:12.5px;color:#333;margin:6px 0 0}
   #rapport table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:2px}
-  #rapport th{text-align:left;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#666;font-weight:600;padding:4px 6px;border-bottom:1px solid #999}
+  #rapport th{text-align:left;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#444;font-weight:600;padding:4px 6px;border-bottom:1px solid #999}
   #rapport td{padding:6px 6px;border-bottom:1px solid #ddd;vertical-align:top}
   #rapport td.num{white-space:nowrap}
   #rapport .methode{font-size:12.5px;color:#222}
-  #rapport .pied{font-size:11px;color:#666;margin-top:16px;border-top:1px solid #ccc;padding-top:8px}
+  #rapport .pied{font-size:11px;color:#444;margin-top:16px;border-top:1px solid #ccc;padding-top:8px}
 }
-/* Puces de réponse (17/9, généralisées par le parcours hybride du 21/9) :
-   réponses cliquables sous la question de la bulle */
-.puces{display:flex;flex-wrap:wrap;gap:8px;align-self:flex-start;max-width:100%;padding:0 0 4px}
-.puces+.puces{margin-top:-6px}
-.puce.on{background:var(--color-accent-200);border-color:var(--color-accent-700);font-weight:600}
-.puce.on::before{content:'✓\00a0'}
-.puce.sec{border-style:dashed;border-color:var(--color-neutral-500);background:transparent;color:var(--color-neutral-700);box-shadow:none} /* porte de sortie : reste discrète */
-.puces .legende{font-size:12.5px;color:var(--color-neutral-700);align-self:center}
-.puces-envoi{align-items:center;gap:14px}
-.puces-envoi .btn{height:34px;padding:0 16px;font-size:12px}
-.puces-envoi .btn:disabled{opacity:.4;cursor:default;background:transparent}
-.puces-envoi span{font-size:13px;color:var(--color-neutral-700)}
-.puce{border:1px solid var(--color-neutral-300);border-radius:999px;background:#fff;color:var(--color-text);font:inherit;font-size:14px;font-weight:600;line-height:1.2;padding:8px 16px;cursor:pointer;box-shadow:0 1px 2px rgba(45,43,43,.12)} /* blanches, texte encre (24/9, façon maquette) */
-.puce:hover{border-color:var(--color-accent);color:var(--color-accent)}
-.puce:active{background:var(--color-accent-100)}
 
-/* Parcours hybride (chantier du 21/9) : jauge, récapitulatif, note d'expérience */
-.jauge{margin:0 0 10px}
-.jauge-ligne{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
-.jauge-lib{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--color-text)} /* noir (23/9) */
-.jauge-etape{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-700);white-space:nowrap}
-.jauge-barre{height:6px;border-radius:999px;background:var(--color-neutral-300);overflow:hidden}
-.jauge-barre i{display:block;height:100%;width:0;background:var(--color-accent);border-radius:999px;transition:width .4s ease}
-.jauge-avert{font-size:12.5px;color:var(--color-accent-700);margin:6px 0 0}
-@media (prefers-reduced-motion:reduce){.jauge-barre i{transition:none}}
-.nav-etapes{display:flex;gap:8px;justify-content:flex-end;margin:0 0 4px}
-.nav-etapes button{width:32px;height:32px;border-radius:50%;border:1px solid var(--color-neutral-500);background:#fff;color:var(--color-text);font-size:17px;line-height:1;cursor:pointer;display:grid;place-items:center;font-family:inherit;padding:0}
-.nav-etapes button:hover:not(:disabled){border-color:var(--color-accent);color:var(--color-accent)}
-.nav-etapes button:disabled{opacity:.3;cursor:default}
-.recap{display:none;flex-wrap:wrap;gap:6px;padding:0 0 10px}
-.recap.on{display:flex}
-.chip{border:1px solid var(--color-divider);border-radius:999px;background:var(--color-surface);color:var(--color-text);font:inherit;font-size:12.5px;line-height:1.2;padding:5px 12px;cursor:pointer}
-.chip:hover{border-color:var(--color-accent);color:var(--color-accent-700)}
-.chip.sec{border-style:dashed;color:var(--color-neutral-700)}
-.smileys{display:flex;gap:10px;align-self:flex-start;padding:2px 0 4px}
-.smileys button{font-size:30px;line-height:1;background:none;border:0;cursor:pointer;filter:grayscale(1);opacity:.75;padding:2px;transition:filter .15s,opacity .15s,transform .15s}
-.smileys button:hover,.smileys button.choisi{filter:none;opacity:1;transform:scale(1.15)}
-.smileys button:disabled{cursor:default}
-.smileys button:disabled:not(.choisi){opacity:.35}
-.merci{font-size:14px;color:var(--color-neutral-800);margin:0}
-.unite{color:var(--color-neutral-700);font-size:15px;flex:none}
-
-/* Saisie */
-.vignettes{display:none;gap:8px;padding:8px 0 4px}
-.vignettes.on{display:flex}
-.vign{position:relative}
-.vign img{width:54px;height:54px;object-fit:cover;border-radius:6px;border:1px solid var(--color-divider)}
-.vign button{position:absolute;top:-7px;right:-7px;width:19px;height:19px;line-height:1;border-radius:50%;padding:0;font-size:11px;border:1px solid var(--color-accent);background:var(--color-bg);color:var(--color-accent-700);cursor:pointer}
-form.saisie{margin-top:auto;padding-top:10px;display:none} /* visible seulement pour l'adresse et les surfaces */
-form.saisie.on{display:block}
-.champ{min-height:56px;border:1px solid var(--color-neutral-300);border-radius:var(--radius-lg);background:#fff;display:flex;align-items:center;padding:6px 8px 6px 20px;gap:12px}
-.champ input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:16px;line-height:1.5;color:var(--color-text);padding:8px 0;outline:none}
-.champ input::placeholder{color:var(--color-neutral-500);font-style:italic}
-.envoyer{width:42px;height:42px;border:1px solid var(--color-accent);border-radius:50%;background:var(--color-accent);display:grid;place-items:center;color:#fff;cursor:pointer;flex:none}
-.envoyer:hover{background:#158f45;border-color:#158f45}
-.envoyer:disabled{opacity:.4;cursor:default}
-
-.partner-note{align-self:center;line-height:1.5}
-.partner-note p{margin:0;font-size:14px;color:var(--color-neutral-800)}
-.partner-note .indicatif{font-size:12.5px;color:var(--color-neutral-700)}
-
-/* Partenariat */
-.partner{display:grid;grid-template-columns:26% 1fr;gap:24px;align-items:center;border-bottom:1px solid var(--color-divider);padding:16px 0 12px;margin-top:16px}
-.partner .btn{background:#fff;border:1px solid var(--color-neutral-500);color:var(--color-text)} /* façon maquette du 24/9 : bouton clair */
-.partner .btn:hover{background:var(--color-surface);border-color:var(--color-neutral-700)}
-.partner .btn:active{background:var(--color-neutral-300)}
-.partner .btn{justify-self:center}
-
-/* Pied de page */
-footer.bottom .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:12px 28px;padding-top:12px;padding-bottom:16px;font-size:13px;color:var(--color-neutral-700)}
-footer.bottom a{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--color-accent)}
-footer.bottom .ia{margin-left:auto;font-size:11px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
-footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:600;letter-spacing:.06em;color:var(--color-accent-700)}
-
-/* écrans peu hauts (portables) : titre et marges resserrés pour que tout tienne */
-@media (min-width:981px) and (max-height:1000px){
-  .card{padding-top:12px}
-  main{padding-top:12px}
-  .intro h1{font-size:40px;margin-bottom:8px}
-  .intro p{font-size:16px;margin-bottom:14px}
-  .card{padding:16px 22px 12px}
-  .card-head{margin-bottom:8px}
-  .card-head h2{font-size:24px;margin-bottom:2px}
-  .card-head p{font-size:16px}
-  .envoyer{width:38px;height:38px}
-  .partner-note p{font-size:13px}
-  .partner{padding:10px 0 8px;margin-top:10px}
-  header.top .wrap{padding-top:12px;padding-bottom:12px}
-}
-@media (min-width:981px) and (max-height:1000px){
-  .intro h1{font-size:32px}
-  .intro h1 br{display:none}
-  .intro p{margin-bottom:10px}
-}
-@media (min-width:981px) and (max-height:760px){
-}
-@media (max-width:1180px){
-  header.top .wrap{display:flex;justify-content:space-between} /* plus la place pour trois colonnes égales */
-    .intro h1{font-size:44px}
-}
-@media (max-width:980px){
-  .card-head{display:flex}
-  .stage{padding-left:var(--pad)}
-  .intro,.card{grid-column:1}
-  .intro{grid-row:auto}
-    .scene{grid-template-columns:1fr;grid-template-rows:auto;min-height:0;height:auto!important}
-  .partner{display:flex}
-  .partner .btn{justify-self:auto}
-  .plate{display:none}
+@media (max-width:1100px){
+  nav.menu{gap:26px;font-size:17px}
+  .brand{font-size:44px}
+  .puces-grandes .puce{padding:10px 52px}
+  .puce .fl{right:20px}
 }
 @media (max-width:820px){
-  :root{--pad:20px}
-  .brand{font-size:30px}
-  nav.menu{gap:16px;font-size:12px}
-  main{padding-top:16px}
-  .intro h1{font-size:34px}
-  .intro p{font-size:16.5px;margin-bottom:18px}
-  .card{padding:18px 16px 14px}
-  .card-head{gap:14px;margin-bottom:10px}
-  .card-head h2{font-size:24px}
-  .card-head p{font-size:15.5px}
-  .flux{max-height:52vh;min-height:120px}
-  .msg{max-width:90%;font-size:15px}
-  .champ{min-height:58px;padding:4px 6px 4px 14px;gap:8px}
-  .champ input{font-size:16px} /* 16 px minimum : sous ce seuil, iOS et Android zooment sur le champ au focus */
-  .envoyer{width:38px;height:38px}
-  .smileys button{font-size:26px}
-  .partner{flex-direction:column;align-items:flex-start;gap:12px}
-  footer.bottom .ia{margin-left:0}
+  :root{--pad:16px}
+  header.top .wrap{flex-wrap:wrap;gap:8px 16px;padding-top:14px;padding-bottom:12px}
+  .brand{font-size:36px}
+  nav.menu{width:100%;justify-content:space-between;gap:10px;font-size:14px;letter-spacing:.02em}
+  nav.menu a{padding:4px 0}
+  .intro h1 br{display:none}
+  .intro .sans{letter-spacing:.04em}
+  .card{padding:20px 16px 20px}
+  .puces-grandes{grid-template-columns:1fr;gap:12px}
+  .puces-grandes .puce{min-height:60px;font-size:22px}
+  .q-icone{width:54px;height:54px}
+  .q-icone svg{width:26px;height:26px}
+  .q-tete{gap:14px;align-items:flex-start}
+  .msg.ana{font-size:25px}
+  .msg.resultat,.msg.ana.note{font-size:17.5px}
+  .puce{font-size:19px;padding:10px 20px;min-height:52px}
+  .champ{min-height:58px;padding:4px 6px 4px 18px}
+  .champ input{font-size:17px} /* 16 px minimum : sous ce seuil, iOS et Android zooment sur le champ */
+  .envoyer{width:44px;height:44px}
+  .confiance{grid-template-columns:1fr;gap:18px;padding:24px 4px}
+  .conf-sep{display:none}
+  .conf{gap:16px}
+  .conf-icone{width:60px;height:60px}
+  .conf-icone svg{width:28px;height:28px}
+  .conf br{display:none}
+  footer.bottom .wrap{font-size:17px;gap:12px 22px}
+  footer.bottom .liens{margin:0;gap:10px 22px}
+  .btn{font-size:17px;height:52px;padding:0 24px}
 }
 </style>
 </head>
@@ -267,8 +245,9 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="./" aria-label="Nice.immo, accueil">NICE.<span>IMMO</span></a>
+    <a class="brand" href="./" aria-label="Nice.immo, accueil">NICE.IMMO</a>
     <nav class="menu" aria-label="Navigation">
+      <a href="mailto:contact@nice.immo?subject=Partenariat%20Nice.immo">Partenariat</a>
       <a href="./" aria-current="page">Estimer un bien</a>
       <a href="vivre-a-nice/">Vivre à Nice</a>
     </nav>
@@ -276,46 +255,42 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
 </header>
 
 <main>
-  <div class="wrap stage">
-    <section class="scene" aria-label="Estimation de votre bien">
-      <div class="plate"><img src="robot-nice-1067-n2.webp" width="1067" height="1600" alt="Assistant robot d’estimation immobilière devant la baie des Anges à Nice" fetchpriority="high"></div>
-      <section class="intro" id="estimer">
-      <h1>Vous achetez, vendez ou investissez à Nice ?<br>Estimez un bien avec notre <em>IA spécialisée.</em></h1>
-      <p>Vous obtenez une estimation fondée sur 22 118 ventes officielles (données DVF de l’État) à Nice depuis 2023.</p>
-  </section>
-      <div class="card">
-        <div class="card-head">
-          <div class="ana-mark"><img src="robot-nice-medaillon.webp" width="500" height="500" alt=""></div>
-          <div>
-            <h2>Bonjour,</h2>
-            <p>Quel bien souhaitez-vous estimer aujourd'hui ?</p>
-          </div>
-        </div>
-        <div class="jauge" id="jauge">
-          <div class="jauge-ligne"><span class="jauge-lib" id="jauge-lib">Votre estimation en PDF dès la fin de l’échange avec l’IA.</span><span class="jauge-etape" id="jauge-etape">Étape 1 sur 14</span></div>
-          <div class="jauge-barre" aria-hidden="true"><i id="jauge-fill"></i></div>
-          <p class="jauge-avert" id="jauge-avert" hidden>Plus il y a de réponses, plus l’estimation est précise.</p>
-        </div>
-        <div class="recap" id="recap" aria-label="Vos réponses, cliquez pour modifier"></div>
-        <div class="flux" id="flux" aria-live="polite"><div class="msg ana attente" id="attente"><div class="qui">Nice.immo</div><span class="pts" aria-hidden="true"><i></i><i></i><i></i></span><span class="txt">Recherche dans les ventes officielles (DVF) autour de votre bien…</span></div></div>
-        <div class="vignettes" id="vignettes"></div>
-        <form class="saisie" id="f">
-          <div class="champ">
-            <label for="saisie" hidden>Votre réponse</label>
-            <input id="saisie" type="text" maxlength="120" autocomplete="off">
-            <span class="unite" id="unite" hidden>m²</span>
-            <button class="envoyer" id="envoyer" type="submit" aria-label="Envoyer"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 18-8-7 18-3-7-8-3Z"></path><path d="m11 14 10-11"></path></svg></button>
-            <input type="file" id="fichier" accept="image/*" multiple hidden>
-          </div>
-        </form>
-      </div>
+  <div class="wrap">
+    <section class="intro" id="estimer">
+      <h1>Obtenez en 30 secondes l’estimation d’un bien<br> <span class="l2">Avec notre <span class="rouge">IA</span> spécialisée</span></h1>
+      <p class="sans">Sans obligation de fournir email ou numéro de portable</p>
     </section>
 
-    <section class="partner" id="partenariat">
-      <a class="btn" href="mailto:contact@nice.immo?subject=Partenariat%20Nice.immo">Partenariat</a>
-      <div class="partner-note">
-        <p class="indicatif">Estimations communiquées à titre indicatif.</p>
-        <p>Vous envisagez de vendre ou d’acheter ? Nous pouvons vous recommander un professionnel local.</p>
+    <section class="card" aria-label="Estimation de votre bien">
+      <div class="jauge" id="jauge">
+        <div class="jauge-ligne"><span class="jauge-lib" id="jauge-lib">Votre estimation en PDF dès la fin de l’échange avec l’IA.</span><span class="jauge-etape" id="jauge-etape">7&nbsp;%</span></div>
+        <div class="jauge-barre" aria-hidden="true"><i id="jauge-fill"></i></div>
+        <p class="jauge-avert" id="jauge-avert" hidden>Plus il y a de réponses, plus l’estimation est précise.</p>
+      </div>
+      <div class="sep" aria-hidden="true"></div>
+      <div class="recap" id="recap" aria-label="Vos réponses, cliquez pour modifier"></div>
+      <div class="flux" id="flux" aria-live="polite"><div class="msg ana attente" id="attente"><span class="pts" aria-hidden="true"><i></i><i></i><i></i></span><span class="txt">Recherche dans les ventes officielles (DVF) autour de votre bien…</span></div></div>
+      <div class="vignettes" id="vignettes"></div>
+      <form class="saisie" id="f">
+        <div class="champ">
+          <label for="saisie" hidden>Votre réponse</label>
+          <input id="saisie" type="text" maxlength="120" autocomplete="off">
+          <span class="unite" id="unite" hidden>m²</span>
+          <button class="envoyer" id="envoyer" type="submit" aria-label="Envoyer"><svg class="ico" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+          <input type="file" id="fichier" accept="image/*" multiple hidden>
+        </div>
+      </form>
+    </section>
+
+    <section class="confiance" aria-label="À savoir">
+      <div class="conf">
+        <span class="conf-icone" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M8 11h8"/><path d="M8 14.5h8"/><path d="M8 18h5"/></svg></span>
+        <p>Estimations communiquées à titre indicatif.<br> <span class="souligne">Établies, entre autres, à partir des données DVF</span><br> de la Direction générale des Finances publiques.</p>
+      </div>
+      <div class="conf-sep" aria-hidden="true"></div>
+      <div class="conf">
+        <span class="conf-icone" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/><path d="m21 3 1 11h-2"/><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/></svg></span>
+        <p>Nous pouvons vous recommander un professionnel local<br> connaissant votre secteur.</p>
       </div>
     </section>
   </div>
@@ -326,10 +301,12 @@ footer.bottom .ia b{font-family:var(--font-heading);font-size:15px;font-weight:6
 <footer class="bottom">
   <div class="wrap">
     <span>Nice.immo est un service privé indépendant de la Ville de Nice.</span>
-    <a href="mentions-legales/">Mentions légales</a>
-    <a href="confidentialite/">Confidentialité et données personnelles</a>
-    <a href="mailto:contact@nice.immo">Contact</a>
-    <span class="ia">Motoriste <b>IA.IMMO</b></span>
+    <span class="liens">
+      <a href="mentions-legales/">Mentions légales</a>
+      <a href="confidentialite/">Confidentialité et données personnelles</a>
+      <a href="mailto:contact@nice.immo">Contact</a>
+    </span>
+    <span class="ia">IA.IMMO</span>
   </div>
 </footer>
 
@@ -640,11 +617,14 @@ function changeDeType(){
 }
 /* ---- jauge de progression et récapitulatif cliquable ---- */
 function majJauge(){
-if(estimationFaite){jFill.style.width='100%';jLib.textContent='Votre estimation';jEtape.textContent='';return;}
+if(estimationFaite){jFill.style.width='100%';jLib.textContent='Votre estimation';jEtape.textContent='100\u00a0%';return;}
 var o=ordre(),total=o.length,faits=0;
 o.forEach(function(id){if(repondu[id])faits++;});
-jFill.style.width=Math.round(faits/(total+1)*100)+'%'; /* +1 : l'estimation elle-même */
-jEtape.textContent='Étape '+Math.min(faits+1,total)+' sur '+total; /* compteur remis (23/9) */
+/* pourcentage (maquette du père, arbitrage Hadrien 25/9) : la question en
+   cours compte comme entamée -> 7 % à la première, 100 % au résultat */
+var pc=Math.round(Math.min(faits+1,total)/(total+1)*100);
+jFill.style.width=pc+'%';
+jEtape.textContent=pc+'\u00a0%';
 }
 function majRecap(){
 recapEl.innerHTML='';
@@ -661,6 +641,8 @@ recapEl.classList.toggle('on',recapEl.children.length>0);
 }
 /* ---- affichage d'une étape : bulle qui « s'écrit », puis les réponses ---- */
 var minuterieQ=null;
+var ICO_PHOTO='<svg class="ico" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3.2"/></svg>';
+var ICO_FLECHE='<svg class="ico fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
 function montreEtape(id){
 etapeCourante=id;
 videFlux();cacheSaisie();
@@ -676,10 +658,16 @@ var bs=document.createElement('button');bs.type='button';bs.textContent='›';bs
 bs.disabled=!(repondu[id]&&ixNav<oNav.length-1);
 bs.addEventListener('click',function(){if(occupe)return;var o2=ordre(),i2=o2.indexOf(etapeCourante);if(repondu[etapeCourante]&&i2<o2.length-1)montreEtape(o2[i2+1]);});
 nv.appendChild(bp);nv.appendChild(bs);
+if(bp.disabled&&bs.disabled)nv.classList.add('vide'); /* première question : pas de flèches, comme la maquette */
 flux.appendChild(nv);
 }
 if(noteGabarit){bulle('sys',null,noteGabarit);noteGabarit='';}
 var d=bulle('ana','Nice.immo','');
+if(id==='projet'||id==='photos'){ /* kicker photos (cahier, point 7) : accueil et étape photos seulement */
+var tete=document.createElement('div');tete.className='q-tete';
+tete.innerHTML='<span class="q-icone" aria-hidden="true">'+ICO_PHOTO+'</span><div class="q-col"><p class="q-kicker"><span class="rouge">L’IA</span> peut analyser vos photos</p></div>';
+flux.insertBefore(tete,d);tete.querySelector('.q-col').appendChild(d);
+}
 var reduit=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
 clearTimeout(minuterieQ);
 if(reduit){d.appendChild(document.createTextNode(typo(texte)));montreReponses(id);}
@@ -696,14 +684,17 @@ majJauge();recale();
 function montreReponses(id){
 var e=ETAPES[id];
 if(e.mode==='puces'){
-var d=document.createElement('div');d.className='puces';d.setAttribute('role','group');d.setAttribute('aria-label','Réponses');
-e.options().forEach(function(txt){
+var opts=e.options(),grand=opts.length<=3;
+var d=document.createElement('div');d.className='puces'+(grand?' puces-grandes':'');d.setAttribute('role','group');d.setAttribute('aria-label','Réponses');
+if(grand)d.style.setProperty('--n',opts.length);
+opts.forEach(function(txt){
 var b=document.createElement('button');b.type='button';b.className='puce';b.textContent=txt;
+if(grand)b.insertAdjacentHTML('beforeend',ICO_FLECHE);
 b.addEventListener('click',function(){if(occupe)return;repond(id,txt,false);});
 d.appendChild(b);
 });
-if(e.nr)d.appendChild(pilNonRenseigne(id));
 flux.appendChild(d);
+if(e.nr){var dn=document.createElement('div');dn.className='puces';dn.appendChild(pilNonRenseigne(id));flux.appendChild(dn);}
 }else if(e.mode==='nombre'||e.mode==='etage'){
 montreSaisie(e.mode);
 if(e.nr){var d2=document.createElement('div');d2.className='puces';d2.appendChild(pilNonRenseigne(id));flux.appendChild(d2);}
@@ -841,7 +832,7 @@ h+='<tr><td>'+esc(k.adresse)+'</td><td>'+(k.type==='maison'?'Maison':'Appt')+(k.
 h+='</tbody></table>';}
 h+='<p class="kicker">Méthodologie</p><p class="methode">'+typo('Base : '+(m.base_m2_ponderee?'prix moyen de '+String(m.base_m2_ponderee).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' €/m² ':'')+(c.methode==='ventes locales pondérées par distance et récence'?'(ventes réelles 2023-2025 autour de l’adresse, les plus proches et les plus récentes pesant davantage)':'(moyenne communale, faute de ventes suffisantes à proximité)')+', ajusté selon l’état, la surface, le DPE et la vue mer, puis selon le type : étage, ascenseur, terrasse et parking pour un appartement ; mitoyenneté, taille du terrain et garage pour une maison. Fourchette : ± 10 %. '+(c.regle_meme_immeuble&&c.regle_meme_immeuble.indexOf('appliquée')===0?'Base recentrée sur les ventes récentes enregistrées à moins de 50 m (même immeuble ou voisinage immédiat). ':'')+(c.dpe&&c.dpe.indexOf('non')===0?'DPE non renseigné : hypothèse d’une étiquette médiane (D ou E). ':'')+'Cette estimation ne tient pas compte des spécificités du bien ou de l’immeuble : résidence services, bail commercial, monopropriété, charges exceptionnelles, travaux votés, vue ou état particuliers. Pour ces biens, la valeur réelle peut s’écarter fortement de l’estimation.')+'</p>';
 var dj=new Date();
-h+='<p class="pied">Estimation indicative calculée à partir des données officielles (DVF, DGFiP), sans valeur d’expertise. nice.immo · '+('0'+dj.getDate()).slice(-2)+'/'+('0'+(dj.getMonth()+1)).slice(-2)+'/'+dj.getFullYear()+' · Motoriste IA.IMMO</p>';
+h+='<p class="pied">Estimation indicative calculée à partir des données officielles (DVF, DGFiP), sans valeur d’expertise. nice.immo · '+('0'+dj.getDate()).slice(-2)+'/'+('0'+(dj.getMonth()+1)).slice(-2)+'/'+dj.getFullYear()+' · IA.IMMO</p>';
 R.innerHTML=h;
 }
 /* ---- photos du bien (3 max, redimensionnées côté client, jamais stockées) :
@@ -932,7 +923,7 @@ try{
   if(res.ok&&data&&data.commentaire)commentairePhotos=String(data.commentaire);
 }catch(e){}
 penser(false);
-if(commentairePhotos)bulle('ana','Nice.immo',commentairePhotos);
+if(commentairePhotos)bulle('ana note','Nice.immo',commentairePhotos);
 else bulle('sys',null,'Vos photos n’ont pas pu être examinées : l’estimation continue sans elles.');
 vignettes.classList.remove('on');
 occupe=false;repondu.photos=true;
@@ -986,11 +977,31 @@ try{
 if(!texte)texte=restitutionSecours(entree,sortie);
 penser(false);videFlux();
 dernierTexte=texte;
-bulle('ana','Nice.immo',texte);
+afficheResultat(texte);
 estimationFaite=true;occupe=false;
 proposeCR();
 montreAvis();
 majRecap();majJauge();recale();
+}
+/* mise en page du résultat (maquette, point 9) : même texte qu'avant, ligne
+   par ligne — l'estimation en gros titre, fourchette et prix au m² dessous,
+   « Pourquoi cette estimation ? » en intertitre, les « · » en liste */
+function afficheResultat(texte){
+var d=document.createElement('div');d.className='msg ana resultat';
+var liste=null,vus=0;
+String(texte).split('\n').forEach(function(l){
+var t=l.trim();if(!t){liste=null;return;}
+var el;
+if(!vus&&/^Estimation\s*:/.test(t)){el=document.createElement('p');el.className='r-valeur';}
+else if(vus&&vus<3&&/^(Fourchette|≈)/.test(t)){el=document.createElement('p');el.className='r-sous';}
+else if(/^Pourquoi/.test(t)){el=document.createElement('h2');el.className='r-titre';}
+else if(/^[·•\-]\s*/.test(t)){if(!liste){liste=document.createElement('ul');liste.className='r-liste';d.appendChild(liste);}el=document.createElement('li');t=t.replace(/^[·•\-]\s*/,'');el.textContent=typo(t);liste.appendChild(el);vus++;return;}
+else{el=document.createElement('p');el.className='r-p';}
+liste=null;el.textContent=typo(t);d.appendChild(el);vus++;
+});
+flux.appendChild(d);
+var ct=d.getBoundingClientRect().top;if(ct<0)window.scrollBy(0,ct-120);
+return d;
 }
 /* restitution de secours : mêmes lignes que le prompt du worker, chiffres du
    moteur uniquement — utilisée si le service de rédaction est indisponible */
@@ -1049,7 +1060,7 @@ return l.join('\n');
 /* ---- note d'expérience (décision Hadrien 21/9) : 1 à 5 en smileys, anonyme ---- */
 function montreAvis(){
 if(noteEnvoyee)return; /* recalcul après correction : ne pas redemander la note */
-bulle('ana','Nice.immo','Comment avez-vous trouvé l’expérience ?');
+bulle('ana','Nice.immo','Comment avez-vous trouvé l’expérience ?').style.fontSize='clamp(21px,1.6vw,26px)';
 var z=document.createElement('div');z.className='smileys';z.setAttribute('role','group');z.setAttribute('aria-label','Notez l’expérience de 1 à 5');
 ['😐','🙂','😄'].forEach(function(s,i){ /* notes 3 à 5 (décision Hadrien 22/9) */
   var b=document.createElement('button');b.type='button';b.textContent=s;
@@ -1105,34 +1116,6 @@ try{
   else bulleErreurSaisie('Cette adresse n’est pas reconnue à Nice : vérifiez le numéro et la rue, puis réessayez.');
 }
 });
-/* la scène prend exactement la place restante dans la fenêtre (ordinateur) : le champ reste visible,
-   pas d'ascenseur de page, la conversation défile dans la carte ; sous 340 px, la page défile */
-function ajusteScene(){
-var sc=document.querySelector('.scene');
-var br=document.querySelector('.brand');
-if(window.innerWidth<981){sc.style.height='';sc.style.columnGap='';if(br)br.style.transform='';document.querySelector('.partner').style.gridTemplateColumns='';}
-else{
-var top=sc.getBoundingClientRect().top+window.scrollY;
-var bas=document.querySelector('.partner').offsetHeight+document.querySelector('footer.bottom').offsetHeight+18;
-var H=Math.max(380,window.innerHeight-top-bas);
-/* écrans presque carrés : la scène est bornée pour que la colonne du robot ne dépasse pas 34 % de la largeur */
-H=Math.min(H,Math.round(window.innerWidth*0.34*1600/1067));
-sc.style.height=H+'px';
-/* espace robot→carte = espace filet du header→robot */
-sc.style.columnGap=Math.max(8,Math.round(document.querySelector('.plate').getBoundingClientRect().top-document.querySelector('header.top').getBoundingClientRect().bottom))+'px';
-/* logo centré sur la colonne du robot */
-if(br){br.style.transform='';
-var pr=document.querySelector('.plate').getBoundingClientRect(),bb=br.getBoundingClientRect();
-br.style.transform='translateX('+((pr.left+pr.width/2)-(bb.left+bb.width/2)).toFixed(1)+'px)';}
-/* colonne du bouton Partenariat alignée sur celle du robot */
-document.querySelector('.partner').style.gridTemplateColumns=document.querySelector('.plate').getBoundingClientRect().width+'px minmax(0,1fr)';
-}
-recale(); /* la zone de conversation vient de changer de hauteur */
-}
-ajusteScene();
-window.addEventListener('resize',ajusteScene);
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(ajusteScene);
-window.addEventListener('load',ajusteScene);
 /* départ du parcours */
 montreEtape(ordre()[0]);
 </script>
