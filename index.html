@@ -63,11 +63,11 @@ nav.menu a[aria-current]{border-bottom-color:#111}
 
 /* Titre */
 main{flex:1;padding:0 0 10px}
-.intro{text-align:center;padding:clamp(24px,3.1vw,52px) 0 clamp(22px,2.6vw,42px)}
-.intro h1{font-size:clamp(34px,4.85vw,82px);font-weight:700;line-height:1.04;letter-spacing:-.035em}
+.intro{text-align:center;padding:clamp(24px,3.1vw,52px) 0 clamp(20px,2.2vw,36px)}
+.intro h1{font-size:clamp(34px,4.95vw,84px);font-weight:700;line-height:1.04;letter-spacing:-.048em;word-spacing:.02em} /* 26/9 : plus gras et plus serré, comme la référence */
 .intro h1 .l1{white-space:nowrap}
 .intro h1 .l2{display:block;font-size:.93em}
-.intro .sans{font-size:clamp(14px,1.62vw,27px);letter-spacing:.06em;text-transform:uppercase;margin-top:clamp(6px,.6vw,10px);font-weight:600}
+.intro .sans{font-size:clamp(14px,1.77vw,30px);letter-spacing:.06em;text-transform:uppercase;margin-top:clamp(6px,.6vw,10px);font-weight:600}
 
 /* Carte d'échange : elle s'allonge avec son contenu (pas d'ascenseur interne) */
 .card{max-width:1385px;margin:0 auto;border:1.5px solid #a8a8a8;border-radius:var(--radius-lg);background:#fff;padding:clamp(18px,1.9vw,30px) clamp(18px,2.55vw,42px) clamp(20px,1.7vw,28px);position:relative}
@@ -76,8 +76,8 @@ main{flex:1;padding:0 0 10px}
 
 .jauge{margin:0}
 .jauge-ligne{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:12px}
-.jauge-lib{font-size:clamp(13px,1.05vw,18px);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
-.jauge-etape{font-size:clamp(14px,1.1vw,19px);font-weight:700;white-space:nowrap}
+.jauge-lib{font-size:clamp(13px,1.18vw,20px);letter-spacing:.03em;text-transform:uppercase;font-weight:500}
+.jauge-etape{font-size:clamp(14px,1.2vw,20px);font-weight:700;white-space:nowrap}
 .jauge-barre{height:12px;border-radius:999px;background:#e8e8e8;overflow:hidden}
 .jauge-barre i{display:block;height:100%;width:0;background:#111;border-radius:999px;transition:width .4s ease}
 .jauge-avert{font-size:16px;font-style:italic;color:var(--color-neutral-700);margin:10px 0 0}
@@ -94,14 +94,14 @@ main{flex:1;padding:0 0 10px}
 .flux{position:relative;display:flex;flex-direction:column;gap:16px;min-height:120px}
 .msg{white-space:pre-wrap;overflow-wrap:break-word}
 .qui{display:none} /* l'étiquette NICE.IMMO des anciennes bulles n'a plus lieu d'être */
-.msg.ana{font-family:var(--font-heading);font-size:clamp(25px,2.05vw,35px);font-weight:600;line-height:1.2;letter-spacing:-.005em}
+.msg.ana{font-family:var(--font-heading);font-size:clamp(25px,2.25vw,38px);font-weight:600;line-height:1.2;letter-spacing:-.005em}
 .msg.ana.note{font-family:var(--font-body);font-size:19px;font-weight:400;line-height:1.55;border-left:3px solid #111;padding:2px 0 2px 18px}
 .msg.sys{font-size:16px;color:var(--color-neutral-800);border:1px dashed #bdbdbd;border-radius:10px;padding:10px 16px;align-self:flex-start}
 .q-tete{display:flex;gap:18px;align-items:center}
 .q-icone{width:68px;height:68px;border-radius:50%;background:#efefef;display:grid;place-items:center;flex:none}
-.q-icone svg{width:32px;height:32px}
+.q-icone svg{width:36px;height:36px}
 .q-col{display:flex;flex-direction:column;gap:4px;min-width:0}
-.q-kicker{font-size:clamp(13px,1.05vw,18px);letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+.q-kicker{font-size:clamp(13px,1.18vw,20px);letter-spacing:.05em;text-transform:uppercase;font-weight:500}
 .msg .ph{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
 .attente{display:none;font-family:var(--font-body)!important;font-size:18px!important;font-weight:400!important}
 .attente.on{display:block;animation:apparait .35s ease-out}
