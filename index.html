@@ -40,7 +40,8 @@
 }
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-variant-numeric:lining-nums;margin:0;background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);font-size:18px;line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
+html{background:#fff}
+body{font-variant-numeric:lining-nums;margin:0;background:linear-gradient(to bottom,#fff 0%,#fff 73%,#f4f4f4 100%);color:var(--color-text);font-family:var(--font-body);font-size:18px;line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
 a{color:inherit;text-decoration:none}
 img{display:block;max-width:100%;height:auto}
 h1,h2,h3{font-family:var(--font-heading);margin:0;text-wrap:balance}
@@ -55,32 +56,33 @@ svg.ico{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stro
 /* En-tête */
 header.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:24px;padding-top:18px;padding-bottom:18px;background:linear-gradient(#111,#111) bottom center/calc(100% - 2*var(--pad)) 1px no-repeat} /* filet dans les marges, comme la maquette */
 .brand{font-family:var(--font-heading);font-size:59px;font-weight:600;line-height:1;letter-spacing:-.01em;color:#111}
-nav.menu{display:flex;align-items:center;gap:44px;font-size:19px;letter-spacing:.05em;text-transform:uppercase}
+nav.menu{display:flex;align-items:center;gap:44px;font-size:19px;font-weight:500;letter-spacing:.05em;text-transform:uppercase}
 nav.menu a{padding:6px 0;border-bottom:2px solid transparent}
 nav.menu a:hover{border-bottom-color:#111}
 nav.menu a[aria-current]{border-bottom-color:#111}
 
 /* Titre */
 main{flex:1;padding:0 0 10px}
-.intro{text-align:center;padding:clamp(28px,3.8vw,62px) 0 clamp(26px,2.9vw,46px)}
-.intro h1{font-size:clamp(34px,4.85vw,82px);font-weight:700;line-height:1.1;letter-spacing:-.035em}
-.intro h1 .l2{display:block}
-.intro .sans{font-size:clamp(14px,1.62vw,27px);letter-spacing:.06em;text-transform:uppercase;margin-top:clamp(6px,.6vw,10px);font-weight:500}
+.intro{text-align:center;padding:clamp(24px,3.1vw,52px) 0 clamp(22px,2.6vw,42px)}
+.intro h1{font-size:clamp(34px,4.85vw,82px);font-weight:700;line-height:1.04;letter-spacing:-.035em}
+.intro h1 .l1{white-space:nowrap}
+.intro h1 .l2{display:block;font-size:.93em}
+.intro .sans{font-size:clamp(14px,1.62vw,27px);letter-spacing:.06em;text-transform:uppercase;margin-top:clamp(6px,.6vw,10px);font-weight:600}
 
 /* Carte d'échange : elle s'allonge avec son contenu (pas d'ascenseur interne) */
-.card{max-width:1385px;margin:0 auto;border:1px solid #bdbdbd;border-radius:var(--radius-lg);background:#fff;padding:clamp(20px,2.5vw,40px) clamp(18px,2.55vw,42px) clamp(22px,1.8vw,30px);position:relative}
+.card{max-width:1385px;margin:0 auto;border:1.5px solid #a8a8a8;border-radius:var(--radius-lg);background:#fff;padding:clamp(18px,1.9vw,30px) clamp(18px,2.55vw,42px) clamp(20px,1.7vw,28px);position:relative}
 .card.glisse{outline:2px dashed #111;outline-offset:-8px;background:#f7f7f7}
 .card.glisse::after{content:'Déposez vos photos ici';position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-heading);font-size:32px;font-weight:600;background:rgba(255,255,255,.9);pointer-events:none;border-radius:var(--radius-lg)}
 
 .jauge{margin:0}
 .jauge-ligne{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:12px}
-.jauge-lib{font-size:clamp(13px,1.05vw,18px);letter-spacing:.03em;text-transform:uppercase;font-weight:500}
+.jauge-lib{font-size:clamp(13px,1.05vw,18px);letter-spacing:.03em;text-transform:uppercase;font-weight:600}
 .jauge-etape{font-size:clamp(14px,1.1vw,19px);font-weight:700;white-space:nowrap}
 .jauge-barre{height:12px;border-radius:999px;background:#e8e8e8;overflow:hidden}
 .jauge-barre i{display:block;height:100%;width:0;background:#111;border-radius:999px;transition:width .4s ease}
 .jauge-avert{font-size:16px;font-style:italic;color:var(--color-neutral-700);margin:10px 0 0}
 @media (prefers-reduced-motion:reduce){.jauge-barre i{transition:none}}
-.sep{height:1px;background:var(--color-divider);margin:22px 0 22px}
+.sep{height:1px;background:var(--color-divider);margin:18px 0 16px}
 
 .recap{display:none;flex-wrap:wrap;gap:8px;padding:0 0 18px}
 .recap.on{display:flex}
@@ -89,7 +91,7 @@ main{flex:1;padding:0 0 10px}
 .chip.sec{border-style:dashed;color:var(--color-neutral-700)}
 
 /* Déroulé : une question à la fois */
-.flux{position:relative;display:flex;flex-direction:column;gap:18px;min-height:120px}
+.flux{position:relative;display:flex;flex-direction:column;gap:16px;min-height:120px}
 .msg{white-space:pre-wrap;overflow-wrap:break-word}
 .qui{display:none} /* l'étiquette NICE.IMMO des anciennes bulles n'a plus lieu d'être */
 .msg.ana{font-family:var(--font-heading);font-size:clamp(25px,2.05vw,35px);font-weight:600;line-height:1.2;letter-spacing:-.005em}
@@ -99,7 +101,7 @@ main{flex:1;padding:0 0 10px}
 .q-icone{width:68px;height:68px;border-radius:50%;background:#efefef;display:grid;place-items:center;flex:none}
 .q-icone svg{width:32px;height:32px}
 .q-col{display:flex;flex-direction:column;gap:4px;min-width:0}
-.q-kicker{font-size:clamp(13px,1.05vw,18px);letter-spacing:.05em;text-transform:uppercase;font-weight:500}
+.q-kicker{font-size:clamp(13px,1.05vw,18px);letter-spacing:.05em;text-transform:uppercase;font-weight:600}
 .msg .ph{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
 .attente{display:none;font-family:var(--font-body)!important;font-size:18px!important;font-weight:400!important}
 .attente.on{display:block;animation:apparait .35s ease-out}
@@ -120,8 +122,8 @@ main{flex:1;padding:0 0 10px}
 /* Réponses : boutons égaux à contour, noirs au survol (arbitrage Hadrien 25/9) */
 .puces{display:flex;flex-wrap:wrap;gap:14px;max-width:100%}
 .puces-grandes{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:20px}
-.puce{border:1px solid #111;border-radius:999px;background:#fff;color:#111;font-family:var(--font-heading);font-size:clamp(19px,1.45vw,24px);font-weight:600;line-height:1.2;padding:12px 26px;min-height:56px;cursor:pointer;transition:background .15s,color .15s}
-.puces-grandes .puce{min-height:clamp(62px,4.7vw,78px);font-size:clamp(21px,1.8vw,30px);font-weight:500;display:flex;align-items:center;justify-content:center;position:relative;padding:10px 64px}
+.puce{border:1.5px solid #8a8a8a;border-radius:999px;background:#fff;color:#111;font-family:var(--font-heading);font-size:clamp(19px,1.45vw,24px);font-weight:600;line-height:1.2;padding:12px 26px;min-height:56px;cursor:pointer;transition:background .15s,color .15s}
+.puces-grandes .puce{min-height:clamp(62px,4.7vw,78px);font-size:clamp(21px,1.8vw,30px);font-weight:600;display:flex;align-items:center;justify-content:center;position:relative;padding:10px 64px}
 .puce .fl{position:absolute;right:30px;top:50%;transform:translateY(-50%);width:28px;height:28px}
 @media (hover:hover){.puce:hover{background:#111;color:#fff}} /* pas de survol collant sur écran tactile */
 .puce:active{background:#111;color:#fff}
@@ -167,16 +169,16 @@ form.saisie.on{display:block}
 .envoyer:disabled{opacity:.4;cursor:default}
 
 /* Bande de confiance */
-.confiance{max-width:1385px;margin:0 auto;display:grid;grid-template-columns:1fr 1px 1fr;gap:clamp(20px,3vw,50px);align-items:center;padding:clamp(24px,1.7vw,28px) clamp(18px,2.1vw,34px) clamp(22px,1.5vw,26px)}
+.confiance{max-width:1385px;margin:0 auto;display:grid;grid-template-columns:1fr 1.5px 1fr;gap:clamp(20px,3vw,50px);align-items:center;padding:clamp(18px,1.4vw,24px) clamp(18px,2.1vw,34px) clamp(18px,1.3vw,22px)}
 .conf{display:flex;align-items:center;gap:clamp(18px,2.4vw,38px)}
 .conf-icone{width:80px;height:80px;border-radius:50%;background:#efefef;display:grid;place-items:center;flex:none}
 .conf-icone svg{width:36px;height:36px}
 .conf p{font-size:clamp(17px,1.25vw,21px);line-height:1.3}
 .conf .souligne{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
-.conf-sep{width:1px;height:52px;background:#111}
+.conf-sep{width:1.5px;height:56px;background:#9f9f9f}
 
 /* Pied de page (agrandi, demande Hadrien 25/9) */
-footer.bottom .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:14px 38px;padding-top:26px;padding-bottom:30px;font-size:18px;background:linear-gradient(#111,#111) top center/calc(100% - 2*var(--pad)) 1px no-repeat}
+footer.bottom .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:14px 38px;padding-top:22px;padding-bottom:26px;font-size:18px;background:linear-gradient(#111,#111) top center/calc(100% - 2*var(--pad)) 1px no-repeat}
 footer.bottom .liens{display:flex;flex-wrap:wrap;gap:12px 38px;margin:0 auto}
 footer.bottom .liens a{text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px}
 footer.bottom .ia{font-family:var(--font-heading);font-size:22px;font-weight:600;letter-spacing:.04em;white-space:nowrap}
@@ -203,6 +205,7 @@ footer.bottom .ia{font-family:var(--font-heading);font-size:22px;font-weight:600
   #rapport .pied{font-size:11px;color:#444;margin-top:16px;border-top:1px solid #ccc;padding-top:8px}
 }
 
+@media (max-width:1300px){.conf br{display:none}} /* retours de ligne de la référence : grands écrans seulement */
 @media (max-width:1100px){
   nav.menu{gap:26px;font-size:17px}
   .brand{font-size:44px}
@@ -216,6 +219,7 @@ footer.bottom .ia{font-family:var(--font-heading);font-size:22px;font-weight:600
   nav.menu{width:100%;justify-content:space-between;gap:10px;font-size:14px;letter-spacing:.02em}
   nav.menu a{padding:4px 0}
   .intro h1 br{display:none}
+  .intro h1 .l1{white-space:normal}
   .intro .sans{letter-spacing:.04em}
   .card{padding:20px 16px 20px}
   .puces-grandes{grid-template-columns:1fr;gap:12px}
@@ -247,9 +251,9 @@ footer.bottom .ia{font-family:var(--font-heading);font-size:22px;font-weight:600
   <div class="wrap">
     <a class="brand" href="./" aria-label="Nice.immo, accueil">NICE.IMMO</a>
     <nav class="menu" aria-label="Navigation">
-      <a href="mailto:contact@nice.immo?subject=Partenariat%20Nice.immo">Partenariat</a>
       <a href="./" aria-current="page">Estimer un bien</a>
       <a href="vivre-a-nice/">Vivre à Nice</a>
+      <a href="mailto:contact@nice.immo?subject=Partenariat%20Nice.immo">Partenariat</a>
     </nav>
   </div>
 </header>
@@ -257,7 +261,7 @@ footer.bottom .ia{font-family:var(--font-heading);font-size:22px;font-weight:600
 <main>
   <div class="wrap">
     <section class="intro" id="estimer">
-      <h1>Obtenez en 30 secondes l’estimation d’un bien<br> <span class="l2">Avec notre <span class="rouge">IA</span> spécialisée</span></h1>
+      <h1><span class="l1">Obtenez en 30 secondes l’estimation d’un bien</span><br> <span class="l2">Avec notre <span class="rouge">IA</span> spécialisée</span></h1>
       <p class="sans">Sans obligation de fournir email ou numéro de portable</p>
     </section>
 
@@ -662,6 +666,7 @@ if(bp.disabled&&bs.disabled)nv.classList.add('vide'); /* première question : pa
 flux.appendChild(nv);
 }
 if(noteGabarit){bulle('sys',null,noteGabarit);noteGabarit='';}
+if(id==='photos'&&!estimationFaite)lanceAnticipation(); /* 26/9 : le résultat se prépare pendant l'étape photos */
 var d=bulle('ana','Nice.immo','');
 if(id==='projet'||id==='photos'){ /* kicker photos (cahier, point 7) : accueil et étape photos seulement */
 var tete=document.createElement('div');tete.className='q-tete';
@@ -951,12 +956,47 @@ if(dossier.dpe)a.dpe=dossier.dpe;
 if(dossier.vue)a.vue=dossier.vue;
 return a;
 }
+/* ---- rédaction IA (worker /restitution) : texte, ou null si indisponible ---- */
+async function demandeRestitution(entree,sortie,photosTxt){
+try{
+  var res=await fetch(WORKER_BASE+'/restitution',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({entree:entree,sortie:sortie,photos:photosTxt})});
+  var data=null;try{data=await res.json();}catch(e2){}
+  if(res.ok&&data&&data.texte)return String(data.texte);
+}catch(e){}
+return null;
+}
+/* ---- rédaction anticipée (décision Hadrien 26/9, résultat trop lent :
+   9-10 s de rédaction IA) : dès que la question photos s'affiche, toutes
+   les réponses sont connues ; on calcule l'estimation et on demande le
+   texte à l'IA pendant que la personne choisit. « Continuer sans photos »
+   trouve alors le résultat prêt. Photos envoyées ou réponse corrigée : le
+   dossier (la clé) change, la rédaction repart comme avant. Rien n'est
+   affiché avant la fin du parcours ; en cas d'échec, silence et chemin
+   normal. ---- */
+var anticipe=null;
+function lanceAnticipation(){
+var entree=dossierMoteur(),cle=JSON.stringify(entree);
+if(anticipe&&anticipe.cle===cle)return;
+anticipe={cle:cle,p:(async function(){
+  var sortie=await toolEstimerBien(entree);
+  return {sortie:sortie,texte:await demandeRestitution(entree,sortie,undefined)};
+})().catch(function(){return null;})};
+}
 async function lanceEstimation(){
 if(occupe)return;occupe=true;
 cacheSaisie();noteGabarit='';
 if(estimationFaite){videFlux();estimationFaite=false;majJauge();}
 penser(true,'Recherche dans l’historique des ventes autour de votre bien…');
 var entree=dossierMoteur(),sortie=null,texte=null;
+/* rédaction anticipée (26/9) : si elle a été lancée à l'étape photos pour
+   exactement ce dossier et sans photos commentées, on reprend son résultat
+   (déjà prêt, ou on attend la fin de l'appel en cours) */
+var cle=JSON.stringify(entree),pret=null;
+if(!commentairePhotos&&anticipe&&anticipe.cle===cle){try{pret=await anticipe.p;}catch(e){pret=null;}}
+anticipe=null;
+if(pret&&pret.sortie){sortie=pret.sortie;texte=pret.texte;}
+else{
 try{sortie=await toolEstimerBien(entree);}
 catch(err){
   penser(false);occupe=false;
@@ -967,13 +1007,9 @@ catch(err){
   p.appendChild(b);flux.appendChild(p);recale();
   return;
 }
+texte=await demandeRestitution(entree,sortie,commentairePhotos||undefined);
+}
 dernierBien={entree:entree,sortie:sortie};
-try{
-  var res=await fetch(WORKER_BASE+'/restitution',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({entree:entree,sortie:sortie,photos:commentairePhotos||undefined})});
-  var data=null;try{data=await res.json();}catch(e2){}
-  if(res.ok&&data&&data.texte)texte=String(data.texte);
-}catch(e){}
 if(!texte)texte=restitutionSecours(entree,sortie);
 penser(false);videFlux();
 dernierTexte=texte;
