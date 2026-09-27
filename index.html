@@ -175,7 +175,7 @@ form.saisie.on{display:block}
 .conf-icone{width:80px;height:80px;border-radius:50%;background:#efefef;display:grid;place-items:center;flex:none}
 .conf-icone svg{width:36px;height:36px}
 .conf p{font-size:clamp(17px,1.25vw,21px);line-height:1.3}
-.conf .souligne{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.conf .souligne{text-decoration:none} /* 27/9 : plus de soulignement (Hadrien) */
 .conf-sep{width:1.5px;height:56px;background:#9f9f9f}
 
 /* Pied de page (agrandi, demande Hadrien 25/9) */
@@ -228,11 +228,12 @@ nav.menu{font-family:var(--font-body);font-size:16px;font-weight:600;letter-spac
 .msg.resultat,.msg.ana.note{font-size:18px;font-weight:400}
 .r-valeur{font-weight:700;letter-spacing:-.015em}
 .conf p{font-size:clamp(16px,1.15vw,19px)}
-.conf br{display:none}
+.conf p{white-space:nowrap} /* 27/9 : fins de ligne imposées (indicatif. / DVF / publiques.) */
 footer.bottom .wrap{font-family:var(--font-body);font-size:16px}
 footer.bottom .ia{font-family:var(--font-heading);font-weight:700;font-size:21px}
 .merci,.jauge-avert{font-family:var(--font-texte)}
-@media (max-width:1300px){.conf br{display:none}} /* retours de ligne de la référence : grands écrans seulement */
+@media (max-width:1100px){.conf br{display:none}.conf p{white-space:normal}} /* sous 1 100 px : retour à la ligne libre */
+@media print{body{zoom:1!important}}
 @media (max-width:1100px){
   nav.menu{gap:26px;font-size:17px}
   .brand{font-size:44px}
@@ -733,6 +734,7 @@ if(e.nr){var d2=document.createElement('div');d2.className='puces';d2.appendChil
 }else if(e.mode==='adresse'){montreSaisie('adresse');}
 else if(e.mode==='photos'){montrePhotos();}
 recale();
+if(id==='projet')ajusteHauteur(); /* la question d'accueil est affichée : on mesure */
 }
 function pilNonRenseigne(id){
 var b=document.createElement('button');b.type='button';b.className='puce sec';b.textContent='Non renseigné';
@@ -1179,8 +1181,29 @@ try{
   else bulleErreurSaisie('Cette adresse n’est pas reconnue à Nice : vérifiez le numéro et la rue, puis réessayez.');
 }
 });
+/* ajustement à la hauteur de l'écran (27/9, constat sur le MacBook du père :
+   ascenseur dès l'accueil, pas sur l'iMac) : sur ordinateur, si l'accueil ne
+   tient pas en hauteur, toute la page est réduite d'un même facteur (zoom,
+   plancher 80 %), mise en page intacte. Calculé à l'accueil et à chaque
+   redimensionnement tant qu'on y est ; ensuite le facteur reste fixe (le
+   résultat, plus long, défile normalement). Rien sur mobile ni à l'impression. */
+var zoomPage=1;
+function ajusteHauteur(){
+if(window.innerWidth<821){zoomPage=1;document.body.style.zoom='';return;}
+if(etapeCourante!=='projet'||Object.keys(repondu).length)return; /* hors accueil : facteur figé */
+document.body.style.zoom='';
+var hdr=document.querySelector('header.top'),mn=document.querySelector('main'),ft=document.querySelector('footer.bottom');
+var cs=getComputedStyle(mn);
+var naturel=hdr.offsetHeight+mn.querySelector('.wrap').offsetHeight+parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom)+ft.offsetHeight;
+zoomPage=Math.max(0.8,Math.min(1,(window.innerHeight-2)/naturel));
+if(zoomPage<1)document.body.style.zoom=String(zoomPage.toFixed(3));
+}
+window.addEventListener('resize',ajusteHauteur);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(ajusteHauteur);
+window.addEventListener('load',ajusteHauteur);
 /* départ du parcours */
 montreEtape(ordre()[0]);
+ajusteHauteur();
 </script>
 </body>
 </html>
