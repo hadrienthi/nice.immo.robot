@@ -23,7 +23,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://nice.immo/#site","url":"https://nice.immo/","name":"Nice.immo","inLanguage":"fr","description":"Estimation immobilière à Nice par IA, fondée sur les ventes réelles notariées.","publisher":{"@id":"https://nice.immo/#org"}},{"@type":"Organization","@id":"https://nice.immo/#org","name":"Nice.immo","url":"https://nice.immo/","email":"contact@nice.immo","logo":"https://nice.immo/og-nice.jpg"},{"@type":"WebPage","@id":"https://nice.immo/#page","url":"https://nice.immo/","name":"Estimation immobilière à Nice par IA | Nice.immo","isPartOf":{"@id":"https://nice.immo/#site"},"about":{"@type":"Place","name":"Nice"}}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 /* Peau « maquette du père » (25/9) : noir, blanc pur, rouge #FF0000 sur « IA »
    seulement ; une colonne, sans robot ni image, tout en HTML/CSS. Le moteur,
@@ -34,7 +34,8 @@
   --color-accent:#111;--color-accent-100:#f3f3f3;--color-accent-200:#e6e6e6;--color-accent-700:#111;
   --color-neutral-300:#d9d9d9;--color-neutral-500:#9a9a9a;--color-neutral-700:#444;--color-neutral-800:#222;
   --color-divider:#d9d9d9;
-  --font-heading:"EB Garamond",Georgia,serif;--font-body:"EB Garamond",Georgia,serif;
+  --font-heading:"Playfair Display",Georgia,serif;--font-body:"Libre Franklin",Arial,sans-serif; /* version H (27/9) : titres Playfair, interface Franklin, esprit journal */
+  --font-texte:"Playfair Display",Georgia,serif;
   --radius-lg:12px;
   --pad:52px;--maxw:1665px;
 }
@@ -205,6 +206,32 @@ footer.bottom .ia{font-family:var(--font-heading);font-size:22px;font-weight:600
   #rapport .pied{font-size:11px;color:#444;margin-top:16px;border-top:1px solid #ccc;padding-top:8px}
 }
 
+/* ===== Version H (décision Hadrien 27/9) : esprit « journal NYT » =====
+   Titres et textes en Playfair Display, interface (menu, libellés, boutons,
+   pied de page) en Libre Franklin, comme le couple Cheltenham/Franklin du NYT.
+   Retouches du 26/9 : question réduite d'un tiers, trois lignes du titre
+   plus aérées, carte et reste de la page à la même place. */
+.brand{font-weight:700;letter-spacing:-.02em;font-size:58px}
+.intro{padding:clamp(18px,1.6vw,27px) 0 clamp(18px,1.6vw,26px)}
+.intro h1{font-size:clamp(30px,4.15vw,70px);font-weight:700;letter-spacing:-.02em;word-spacing:0;line-height:1.22}
+.intro h1 .l2{font-size:.93em}
+.intro .sans{font-family:var(--font-body);font-weight:600;letter-spacing:.1em;font-size:clamp(13px,1.35vw,22px);margin-top:clamp(12px,1.35vw,22px)}
+nav.menu{font-family:var(--font-body);font-size:16px;font-weight:600;letter-spacing:.06em}
+.jauge-lib,.q-kicker{font-family:var(--font-body);font-size:clamp(12px,.95vw,16px);font-weight:600;letter-spacing:.08em}
+.jauge-etape{font-family:var(--font-body);font-size:clamp(12px,1vw,17px);font-weight:700}
+.msg.ana{font-size:clamp(18px,1.5vw,25px);font-weight:600;letter-spacing:0}
+.puce{font-family:var(--font-body);font-weight:600}
+.puces-grandes .puce{font-weight:600;font-size:clamp(18px,1.4vw,23px)}
+.puce.sec{font-size:16px}
+.chip{font-family:var(--font-body);font-size:14.5px}
+.msg.ana.note,.msg.resultat,.conf p{font-family:var(--font-texte)}
+.msg.resultat,.msg.ana.note{font-size:18px;font-weight:400}
+.r-valeur{font-weight:700;letter-spacing:-.015em}
+.conf p{font-size:clamp(16px,1.15vw,19px)}
+.conf br{display:none}
+footer.bottom .wrap{font-family:var(--font-body);font-size:16px}
+footer.bottom .ia{font-family:var(--font-heading);font-weight:700;font-size:21px}
+.merci,.jauge-avert{font-family:var(--font-texte)}
 @media (max-width:1300px){.conf br{display:none}} /* retours de ligne de la référence : grands écrans seulement */
 @media (max-width:1100px){
   nav.menu{gap:26px;font-size:17px}
@@ -216,7 +243,7 @@ footer.bottom .ia{font-family:var(--font-heading);font-size:22px;font-weight:600
   :root{--pad:16px}
   header.top .wrap{flex-wrap:wrap;gap:8px 16px;padding-top:14px;padding-bottom:12px}
   .brand{font-size:36px}
-  nav.menu{width:100%;justify-content:space-between;gap:10px;font-size:14px;letter-spacing:.02em}
+  nav.menu{width:100%;justify-content:space-between;gap:10px;font-size:12.5px;letter-spacing:.03em}
   nav.menu a{padding:4px 0}
   .intro h1 br{display:none}
   .intro h1 .l1{white-space:normal}
@@ -227,8 +254,8 @@ footer.bottom .ia{font-family:var(--font-heading);font-size:22px;font-weight:600
   .q-icone{width:54px;height:54px}
   .q-icone svg{width:26px;height:26px}
   .q-tete{gap:14px;align-items:flex-start}
-  .msg.ana{font-size:25px}
-  .msg.resultat,.msg.ana.note{font-size:17.5px}
+  .msg.ana{font-size:20px}
+  .msg.resultat,.msg.ana.note{font-size:17px}
   .puce{font-size:19px;padding:10px 20px;min-height:52px}
   .champ{min-height:58px;padding:4px 6px 4px 18px}
   .champ input{font-size:17px} /* 16 px minimum : sous ce seuil, iOS et Android zooment sur le champ */
@@ -239,7 +266,7 @@ footer.bottom .ia{font-family:var(--font-heading);font-size:22px;font-weight:600
   .conf-icone{width:60px;height:60px}
   .conf-icone svg{width:28px;height:28px}
   .conf br{display:none}
-  footer.bottom .wrap{font-size:17px;gap:12px 22px}
+  footer.bottom .wrap{font-size:15.5px;gap:12px 22px}
   footer.bottom .liens{margin:0;gap:10px 22px}
   .btn{font-size:17px;height:52px;padding:0 24px}
 }
