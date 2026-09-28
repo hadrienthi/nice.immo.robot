@@ -231,7 +231,17 @@ nav.menu{font-family:var(--font-body);font-size:16px;font-weight:600;letter-spac
 .conf p{white-space:nowrap} /* 27/9 : fins de ligne imposées (indicatif. / DVF / publiques.) */
 footer.bottom .wrap{font-family:var(--font-body);font-size:16px}
 footer.bottom .ia{font-family:var(--font-heading);font-weight:700;font-size:21px}
-.merci,.jauge-avert{font-family:var(--font-texte)}
+.merci{font-family:var(--font-texte)}
+/* 28/9 (Hadrien) : points rouges du logo et de IA.IMMO, jauge rouge, bouton PDF
+   en noir sur blanc, estimation deux fois plus petite, avertissement de la
+   jauge dans le caractère de « VOTRE ESTIMATION » */
+.point{color:var(--rouge)}
+.jauge-barre i{background:var(--rouge)}
+.jauge-avert{font-family:var(--font-body);font-style:normal;font-size:clamp(12px,.95vw,16px);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#111;margin:12px 0 0}
+.cr .btn{background:#fff;color:#111;border:1.5px solid #111}
+.cr .btn:hover{background:#111;color:#fff}
+.r-valeur{font-size:clamp(20px,1.8vw,30px);letter-spacing:-.01em;margin:0 0 6px}
+.r-titre{font-size:clamp(19px,1.35vw,23px)}
 @media (max-width:1100px){.conf br{display:none}.conf p{white-space:normal}} /* sous 1 100 px : retour à la ligne libre */
 @media print{body{zoom:1!important}}
 @media (max-width:1100px){
@@ -277,7 +287,7 @@ footer.bottom .ia{font-family:var(--font-heading);font-weight:700;font-size:21px
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="./" aria-label="Nice.immo, accueil">NICE.IMMO</a>
+    <a class="brand" href="./" aria-label="Nice.immo, accueil">NICE<span class="point">.</span>IMMO</a>
     <nav class="menu" aria-label="Navigation">
       <a href="./" aria-current="page">Estimer un bien</a>
       <a href="vivre-a-nice/">Vivre à Nice</a>
@@ -338,7 +348,7 @@ footer.bottom .ia{font-family:var(--font-heading);font-weight:700;font-size:21px
       <a href="confidentialite/">Confidentialité et données personnelles</a>
       <a href="mailto:contact@nice.immo">Contact</a>
     </span>
-    <span class="ia">IA.IMMO</span>
+    <span class="ia">IA<span class="point">.</span>IMMO</span>
   </div>
 </footer>
 
@@ -853,7 +863,7 @@ else{lignes.push(['Étage',rEtage||'Non renseigné'],['Ascenseur',e.ascenseur===
 if(e.exposition)lignes.push(['Exposition',{sud:'Sud',ouest:'Ouest',est:'Est',nord:'Nord'}[e.exposition]||e.exposition]);
 if(e.vue||e.vue_mer)lignes.push(['Vue',(e.vue==='mer'||e.vue_mer)?'Vue mer':e.vue==='degagee'?'Sans vis-à-vis':'Vue ville']);
 var esc=function(x){return String(x).replace(/[&<>]/g,function(ch){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[ch];});};
-var h='<p class="marque">NICE.<span>IMMO</span></p><p class="kicker">Étude d’estimation</p>';
+var h='<p class="marque">NICE<span style="color:#ff0000">.</span>IMMO</p><p class="kicker">Étude d’estimation</p>';
 h+='<div class="bien">'+lignes.map(function(l){return '<div'+(l[2]?' class="large"':'')+'><b>'+esc(l[0])+'</b>'+typo(' : ')+esc(l[1])+'</div>';}).join('')+'</div>';
 h+='<p class="kicker">Valeur estimée</p><p class="valeur">'+eur(val)+'</p>';
 h+='<p class="sous">'+(bas&&haut?eur(bas)+' à '+eur(haut)+' · ':'')+(pm2?typo(String(pm2).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' €/m²'):'')+(c.nb_ventes_1000m?' · fondé sur '+typo(c.nb_ventes_1000m+' ventes à moins de 1 km'):'')+'</p>';
