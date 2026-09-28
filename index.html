@@ -649,7 +649,7 @@ return null;
 }
 function ordre(){
 var o=['projet','adresse','type','surface','pieces'];
-o=o.concat(dossier.type==='maison'?['terrain','mitoyennete','garage','etat','dpe','vue','exposition']:['etage','ascenseur','etat','dpe','vue','exterieur','ext_surface','exposition','parking']);
+o=o.concat(dossier.type==='maison'?['terrain','mitoyennete','garage','etat','dpe','vue']:['etage','ascenseur','etat','dpe','vue','exterieur','ext_surface','parking']); /* 28/9 : question d'exposition RETIRÉE du parcours (Hadrien) ; l'étape reste au catalogue, le moteur l'ignore sans réponse */
 o.push('photos');
 return o.filter(function(id){var e=ETAPES[id];return !(e.passe&&e.passe());});
 }
@@ -1049,6 +1049,7 @@ catch(err){
 texte=await demandeRestitution(entree,sortie,commentairePhotos||undefined);
 }
 dernierBien={entree:entree,sortie:sortie};
+if(texte)texte=corrigeRestitution(texte);
 if(!texte)texte=restitutionSecours(entree,sortie);
 penser(false);videFlux();
 dernierTexte=texte;
@@ -1077,6 +1078,39 @@ liste=null;el.textContent=typo(t);d.appendChild(el);vus++;
 flux.appendChild(d);
 var ct=d.getBoundingClientRect().top;if(ct<0)window.scrollBy(0,ct-120);
 return d;
+}
+/* ---- 28/9 (constat Hadrien) : l'IA inventait des critères « à affiner »
+   (terrain et extérieur pour un appartement déclaré « Pas d'extérieur »).
+   La liste vient désormais du parcours lui-même : seules les questions
+   réellement passées en « Non renseigné » y figurent. Le texte de l'IA est
+   corrigé à l'arrivée (ligne « Ce qui affinerait encore » remplacée ou
+   retirée, « état neuf » -> « excellent état », phrase finale remplacée) ;
+   le worker n'est pas modifié. ---- */
+var MANQUES=[['pieces','le nombre de pièces',function(){return !dossier.pieces;}],
+ ['etage','l’étage',function(){return !dossier.etage;}],
+ ['ascenseur','l’ascenseur',function(){return typeof dossier.ascenseur!=='boolean';}],
+ ['terrain','la surface du terrain',function(){return typeof dossier.jardin_m2!=='number';}],
+ ['mitoyennete','la mitoyenneté',function(){return !dossier.mitoyennete;}],
+ ['garage','le garage',function(){return typeof dossier.garage!=='boolean';}],
+ ['etat','l’état',function(){return !dossier.etat;}],
+ ['dpe','le DPE',function(){return !dossier.dpe;}],
+ ['exterieur','l’extérieur',function(){return !dossier.exterieur;}],
+ ['ext_surface','la surface de l’extérieur',function(){return typeof dossier.terrasse_m2!=='number';}],
+ ['parking','le parking',function(){return typeof dossier.parkings!=='number';}]];
+function criteresManquants(){
+var o=ordre();
+return MANQUES.filter(function(m){return o.indexOf(m[0])>=0&&repondu[m[0]]&&m[2]();}).map(function(m){return m[1];});
+}
+function corrigeRestitution(t){
+var manque=criteresManquants(),ligne=manque.length?'· Ce qui affinerait encore : '+manque.join(', ')+'.':null,vue=false;
+var L=String(t).split('\n').map(function(x){
+  if(/^\s*[·•\-]?\s*Ce qui affinerait encore/i.test(x)){if(vue)return null;vue=true;return ligne;}
+  return x;
+}).filter(function(x){return x!==null;});
+t=L.join('\n');
+t=t.replace(/Pour affiner cette estimation,?\s*nous pouvons vous conseiller des agents immobiliers\.?/gi,'Nous pouvons vous recommander un professionnel local connaissant votre secteur.');
+t=t.replace(/état neuf/g,'excellent état').replace(/État neuf/g,'Excellent état'); /* pas de \b : il ne reconnaît pas les lettres accentuées */
+return t;
 }
 /* restitution de secours : mêmes lignes que le prompt du worker, chiffres du
    moteur uniquement — utilisée si le service de rédaction est indisponible */
@@ -1120,16 +1154,12 @@ l.push('· '+k.adresse+', '+dt+', '+k.surface_m2+' m², '+fmt(k.prix_m2)+' €/m
 /* 4. la confiance, et ce qui manque */
 if(c.gabarit)l.push('· Bien hors du gabarit courant : peu de ventes de taille comparable autour de l’adresse, estimation à prendre avec prudence.');
 if(c.incertitude==='forte')l.push('· Peu de ventes proches : cette estimation est indicative.'); /* seule mention de confiance conservée (décision Hadrien 22/9) : le garde-fou d'honnêteté */
-var manque=[];
-if(!e.etat)manque.push('l’état');
-if(!e.dpe)manque.push('le DPE');
-if(e.type==='appartement'&&!e.etage)manque.push('l’étage');
-if(e.type==='maison'&&typeof e.jardin_m2!=='number')manque.push('la surface du terrain');
+var manque=criteresManquants();
 if(manque.length)l.push('· Ce qui affinerait encore : '+manque.join(', ')+'.');
 l.push('');
 if(e.projet==='vente')l.push('Cette estimation vous donne une base pour fixer votre prix de vente.');
 if(e.projet==='achat')l.push('Cette estimation vous donne une base pour apprécier le prix demandé.');
-l.push('Vous pouvez enregistrer cette étude d’estimation en PDF ou l’imprimer.','Pour affiner cette estimation, nous pouvons vous conseiller des agents immobiliers.');
+l.push('Vous pouvez enregistrer cette étude d’estimation en PDF ou l’imprimer.','Nous pouvons vous recommander un professionnel local connaissant votre secteur.'); /* 28/9 : remplace « Pour affiner… agents immobiliers » (Hadrien) */
 return l.join('\n');
 }
 /* ---- note d'expérience (décision Hadrien 21/9) : 1 à 5 en smileys, anonyme ---- */
